@@ -23,6 +23,7 @@ echo ===========================================================================
 
 echo deploy backend AWS...
 cd ./backend
+npm install
 npm run clean
 npm install --production
 mkdir -p dist/nodejs
