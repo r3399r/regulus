@@ -11,6 +11,10 @@ Parameters:
     Type: String
   TargetEnvr:
     Type: String
+  SubDomain:
+    Type: String
+  Domain:
+    Type: String
 Conditions: 
   IsProd: !Equals [ !Ref TargetEnvr, prod ]
 Resources:
@@ -31,7 +35,6 @@ Resources:
               - sts:AssumeRole
       RoleName: !Sub ${Project}-${TargetEnvr}-lambda-execution-role
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
   ##############################################
   ##### RESTful API and associated Lambdas #####
@@ -48,89 +51,8 @@ Resources:
             "title": !Sub "${Project}-${TargetEnvr}-api"
           },
           "paths": {
-            "/api/chat": {
-              "post": {
-                "produces": [
-                  "application/json"
-                ],
-                "responses": {
-                  "200": {
-                    "description": "200 response",
-                    "schema": {
-                      "$ref": "#/definitions/Empty"
-                    }
-                  }
-                },
-                "x-amazon-apigateway-integration": {
-                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
-                  "responses": {
-                    "default": {
-                      "statusCode": "200"
-                    }
-                  },
-                  "passthroughBehavior": "when_no_match",
-                  "httpMethod": "POST",
-                  "contentHandling": "CONVERT_TO_TEXT",
-                  "type": "aws_proxy"
-                }
-              }
-            },
-            "/api/user": {
+            "/api/question": {
               "get": {
-                "produces": [
-                  "application/json"
-                ],
-                "responses": {
-                  "200": {
-                    "description": "200 response",
-                    "schema": {
-                      "$ref": "#/definitions/Empty"
-                    }
-                  }
-                },
-                "x-amazon-apigateway-integration": {
-                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
-                  "responses": {
-                    "default": {
-                      "statusCode": "200"
-                    }
-                  },
-                  "passthroughBehavior": "when_no_match",
-                  "httpMethod": "POST",
-                  "contentHandling": "CONVERT_TO_TEXT",
-                  "type": "aws_proxy"
-                }
-              }
-            },
-            "/api/log": {
-              "get": {
-                "produces": [
-                  "application/json"
-                ],
-                "responses": {
-                  "200": {
-                    "description": "200 response",
-                    "schema": {
-                      "$ref": "#/definitions/Empty"
-                    }
-                  }
-                },
-                "x-amazon-apigateway-integration": {
-                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
-                  "responses": {
-                    "default": {
-                      "statusCode": "200"
-                    }
-                  },
-                  "passthroughBehavior": "when_no_match",
-                  "httpMethod": "POST",
-                  "contentHandling": "CONVERT_TO_TEXT",
-                  "type": "aws_proxy"
-                }
-              }
-            },
-            "/api/message/{id}/type": {
-              "put": {
                 "produces": [
                   "application/json"
                 ],
@@ -179,11 +101,10 @@ Resources:
         Variables:
           PROJECT: !Sub ${Project}
           ENVR: !Sub ${TargetEnvr}
-          DB_CLUSTER: !Sub '{{resolve:ssm:${TargetEnvr}-db-cluster:1}}'
-          DB_HOST: !Sub '{{resolve:ssm:${TargetEnvr}-db-host:1}}'
-          DB_PWD: !Sub '{{resolve:ssm:${TargetEnvr}-db-pwd:1}}'
-          DB_USER: !Sub '{{resolve:ssm:${TargetEnvr}-db-user:1}}'
-          CHANNEL_TOKEN: !Sub '{{resolve:ssm:${Project}-${TargetEnvr}-token:1}}'
+          # DB_CLUSTER: !Sub '{{resolve:ssm:${TargetEnvr}-db-cluster:1}}'
+          # DB_HOST: !Sub '{{resolve:ssm:${TargetEnvr}-db-host:1}}'
+          # DB_PWD: !Sub '{{resolve:ssm:${TargetEnvr}-db-pwd:1}}'
+          # DB_USER: !Sub '{{resolve:ssm:${TargetEnvr}-db-user:1}}'
   InvokePermissionLambda:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaFunction]
@@ -203,11 +124,23 @@ Resources:
   #########################################
   ##### Cloudfront and Route53 config #####
   #########################################
+  Route53RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub '${Domain}.'
+      Name: !If [IsProd, !Sub '${SubDomain}.${Domain}.', !Sub '${SubDomain}-${TargetEnvr}.${Domain}.']
+      Type: A
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2
+        DNSName: !GetAtt
+        - CloudFrontDistribution
+        - DomainName
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     DependsOn: [ServerlessApi, S3Bucket]
     Properties:
       DistributionConfig:
+        Aliases: [!If [IsProd, !Sub '${SubDomain}.${Domain}', !Sub '${SubDomain}-${TargetEnvr}.${Domain}']]
         Origins:
         - DomainName: !Select [1, !Split ["//", !GetAtt S3Bucket.WebsiteURL]]
           Id: S3-hosted-website-ID
@@ -247,6 +180,10 @@ Resources:
           MinTTL: 0
           MaxTTL: 0
         PriceClass: PriceClass_200
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:278497686406:certificate/8914c993-68c7-4e06-b741-def8fc0270ba
+          MinimumProtocolVersion: TLSv1
+          SslSupportMethod: sni-only
   ####################################
   ##### S3 Bucket and its policy #####
   ####################################
