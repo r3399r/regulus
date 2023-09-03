@@ -1,12 +1,14 @@
 import { LambdaContext, LambdaEvent } from 'src/model/Lambda';
-import { errorOutput, successOutput } from './util/lambdaHelper';
+import { DbAccess } from './access/DbAccess';
+import { bindings } from './bindings';
 import question from './routes/question';
+import { errorOutput, successOutput } from './util/lambdaHelper';
 
 export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
-  // let db: DbAccess | null = null;
+  console.log(event);
+  const db = bindings.get(DbAccess);
+  await db.startTransaction();
   try {
-    console.log(event);
-    // db = bindings.get(DbAccess);
     let res: any;
 
     const category = event.resource.split('/')[2];
@@ -16,12 +18,16 @@ export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
         break;
     }
 
-    return successOutput(res);
+    const output = successOutput(res);
+    await db.commitTransaction();
+
+    return output;
   } catch (e) {
     console.log(e);
+    await db.rollbackTransaction();
 
     return errorOutput(e);
-  // } finally {
-  //   await db?.cleanup();
+  } finally {
+    await db.cleanup();
   }
 };

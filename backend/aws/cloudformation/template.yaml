@@ -52,7 +52,7 @@ Resources:
           },
           "paths": {
             "/api/question": {
-              "get": {
+              "post": {
                 "produces": [
                   "application/json"
                 ],
@@ -101,10 +101,10 @@ Resources:
         Variables:
           PROJECT: !Sub ${Project}
           ENVR: !Sub ${TargetEnvr}
-          # DB_CLUSTER: !Sub '{{resolve:ssm:${TargetEnvr}-db-cluster:1}}'
-          # DB_HOST: !Sub '{{resolve:ssm:${TargetEnvr}-db-host:1}}'
-          # DB_PWD: !Sub '{{resolve:ssm:${TargetEnvr}-db-pwd:1}}'
-          # DB_USER: !Sub '{{resolve:ssm:${TargetEnvr}-db-user:1}}'
+          DB_CLUSTER: !Sub '{{resolve:ssm:${TargetEnvr}-db-cluster:1}}'
+          DB_HOST: !Sub '{{resolve:ssm:${TargetEnvr}-db-host:1}}'
+          DB_PWD: !Sub '{{resolve:ssm:${TargetEnvr}-db-pwd:1}}'
+          DB_USER: !Sub '{{resolve:ssm:${TargetEnvr}-db-user:1}}'
   InvokePermissionLambda:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaFunction]
