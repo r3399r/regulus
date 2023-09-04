@@ -3,7 +3,12 @@ import uniqid from 'uniqid';
 import { CategoryAccess } from 'src/access/CategoryAccess';
 import { ChapterAccess } from 'src/access/ChapterAccess';
 import { QuestionAccess } from 'src/access/QuestionAccess';
-import { PostQuestionRequest, PostQuestionResponse } from 'src/model/api';
+import {
+  GetQuestionParams,
+  GetQuestionResponse,
+  PostQuestionRequest,
+  PostQuestionResponse,
+} from 'src/model/api';
 import { QuestionEntity } from 'src/model/entity/QuestionEntity';
 import { NotFoundError } from 'src/model/error';
 
@@ -48,5 +53,21 @@ export class QuestionService {
     question.youtube = data.youtube ?? null;
 
     return await this.questionAccess.save(question);
+  }
+
+  public async getQuestionList(
+    params: GetQuestionParams | null
+  ): Promise<GetQuestionResponse> {
+    const limit = params ? Number(params.limit) : 50;
+    const offset = params ? Number(params.offset) : 0;
+
+    const res = await this.questionAccess.findAndCount({
+      // where: { userId: params ? params.userId : undefined },
+      order: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    });
+
+    return { data: res[0], paginate: { limit, offset, count: res[1] } };
   }
 }

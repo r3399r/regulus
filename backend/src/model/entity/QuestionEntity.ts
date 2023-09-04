@@ -16,6 +16,7 @@ export type Question = {
   answerFormat: string | null;
   youtube: string | null;
   categories: Category[];
+  chapters: Chapter[];
   createdAt: string | null;
   updatedAt: string | null;
 };

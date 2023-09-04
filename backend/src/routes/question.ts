@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { QuestionService } from 'src/logic/QuestionService';
-import { PostQuestionRequest } from 'src/model/api';
+import { GetQuestionParams, PostQuestionRequest } from 'src/model/api';
 import { LambdaEvent } from 'src/model/Lambda';
 
 const question = async (event: LambdaEvent) => {
@@ -12,6 +12,10 @@ const question = async (event: LambdaEvent) => {
 
       return await service.addQuestion(
         JSON.parse(event.body) as PostQuestionRequest
+      );
+    case 'GET':
+      return await service.getQuestionList(
+        event.queryStringParameters as GetQuestionParams | null
       );
   }
 

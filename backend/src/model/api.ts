@@ -1,4 +1,5 @@
 import { Question } from './entity/QuestionEntity';
+import { Pagination, PaginationParams } from './Pagination';
 
 export type PostQuestionRequest = {
   content: string;
@@ -11,3 +12,7 @@ export type PostQuestionRequest = {
 };
 
 export type PostQuestionResponse = Question;
+
+export type GetQuestionParams = PaginationParams;
+
+export type GetQuestionResponse = Pagination<Question[]>;
