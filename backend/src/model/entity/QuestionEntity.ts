@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Category, CategoryEntity } from './CategoryEntity';
 import { Chapter, ChapterEntity } from './ChapterEntity';
+import { Tag, TagEntity } from './TagEntity';
 
 export type Question = {
   id: string;
@@ -17,6 +18,7 @@ export type Question = {
   youtube: string | null;
   categories: Category[];
   chapters: Chapter[];
+  tags: Tag[];
   createdAt: string | null;
   updatedAt: string | null;
 };
@@ -59,6 +61,14 @@ export class QuestionEntity implements Question {
     inverseJoinColumn: { name: 'chapter_id', referencedColumnName: 'id' },
   })
   chapters!: Chapter[];
+
+  @ManyToMany(() => TagEntity, { cascade: true })
+  @JoinTable({
+    name: 'question_tag',
+    joinColumn: { name: 'question_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+  })
+  tags!: Tag[];
 
   @BeforeInsert()
   setDateCreated(): void {

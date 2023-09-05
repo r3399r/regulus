@@ -4,6 +4,7 @@ import uniqid from 'uniqid';
 import { CategoryAccess } from 'src/access/CategoryAccess';
 import { ChapterAccess } from 'src/access/ChapterAccess';
 import { QuestionAccess } from 'src/access/QuestionAccess';
+import { TagAccess } from 'src/access/TagAccess';
 import {
   GetQuestionParams,
   GetQuestionResponse,
@@ -11,6 +12,7 @@ import {
   PostQuestionResponse,
 } from 'src/model/api';
 import { QuestionEntity } from 'src/model/entity/QuestionEntity';
+import { TagEntity } from 'src/model/entity/TagEntity';
 import { NotFoundError } from 'src/model/error';
 
 /**
@@ -27,11 +29,15 @@ export class QuestionService {
   @inject(ChapterAccess)
   private readonly chapterAccess!: ChapterAccess;
 
+  @inject(TagAccess)
+  private readonly tagAccess!: TagAccess;
+
   public async addQuestion(
     data: PostQuestionRequest
   ): Promise<PostQuestionResponse> {
     const categories = await this.categoryAccess.find();
     const chapters = await this.chapterAccess.find();
+    const tags = await this.tagAccess.find();
 
     const thisCategories = data.category?.map((v) => {
       const category = categories.find((c) => c.name === v);
@@ -43,6 +49,14 @@ export class QuestionService {
       if (chapter) return chapter;
       throw new NotFoundError(`chapter ${v} not found`);
     });
+    const thisTags = data.tag?.map((v) => {
+      const tag = tags.find((c) => c.name === v);
+      if (tag) return tag;
+      const newTag = new TagEntity();
+      newTag.name = v;
+
+      return this.tagAccess.save(newTag);
+    });
 
     const question = new QuestionEntity();
     question.id = uniqid.time();
@@ -51,6 +65,7 @@ export class QuestionService {
     question.answerFormat = data.answerFormat;
     question.categories = thisCategories ?? [];
     question.chapters = thisChapters ?? [];
+    question.tags = await Promise.all(thisTags ?? []);
     question.youtube = data.youtube ?? null;
 
     return await this.questionAccess.save(question);
@@ -78,6 +93,7 @@ export class QuestionService {
       questionIds = await this.questionAccess.findDistinctId({
         categoryId: params?.categoryId?.split(','),
         chapterId: params?.chapterId?.split(','),
+        tagId: params?.tagId?.split(','),
       });
 
     const res = await this.questionAccess.findAndCount({

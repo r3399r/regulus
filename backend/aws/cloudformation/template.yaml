@@ -135,6 +135,10 @@ Resources:
                   "type": "array",
                   "items": {"type": "string"}
                 },
+                "tag": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
               },
               "required": ["content","answer","answerFormat"]
             },

@@ -7,7 +7,7 @@ export type PostQuestionRequest = {
   answerFormat: string;
   category?: string[];
   chapter?: string[];
-  // "tag": string[],
+  tag?: string[];
   youtube?: string;
 };
 
@@ -17,6 +17,7 @@ export type GetQuestionParams = PaginationParams & {
   id?: string;
   categoryId?: string;
   chapterId?: string;
+  tagId?: string;
 };
 
 export type GetQuestionResponse = Pagination<Question[]>;
