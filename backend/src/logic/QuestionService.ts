@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { In } from 'typeorm';
 import uniqid from 'uniqid';
 import { CategoryAccess } from 'src/access/CategoryAccess';
 import { ChapterAccess } from 'src/access/ChapterAccess';
@@ -58,11 +59,29 @@ export class QuestionService {
   public async getQuestionList(
     params: GetQuestionParams | null
   ): Promise<GetQuestionResponse> {
-    const limit = params ? Number(params.limit) : 50;
-    const offset = params ? Number(params.offset) : 0;
+    if (params?.id) {
+      const res = await this.questionAccess.findOne({
+        where: { id: params.id },
+      });
+
+      return {
+        data: res ? [res] : [],
+        paginate: { limit: 0, offset: 0, count: res ? 1 : 0 },
+      };
+    }
+
+    const limit = params?.limit ? Number(params.limit) : 50;
+    const offset = params?.offset ? Number(params.offset) : 0;
+
+    let questionIds: string[] = [];
+    if (params?.categoryId || params?.chapterId)
+      questionIds = await this.questionAccess.findDistinctId({
+        categoryId: params?.categoryId?.split(','),
+        chapterId: params?.chapterId?.split(','),
+      });
 
     const res = await this.questionAccess.findAndCount({
-      // where: { userId: params ? params.userId : undefined },
+      where: questionIds.length > 0 ? { id: In(questionIds) } : undefined,
       order: { createdAt: 'desc' },
       take: limit,
       skip: offset,

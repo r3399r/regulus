@@ -13,6 +13,10 @@ export type PostQuestionRequest = {
 
 export type PostQuestionResponse = Question;
 
-export type GetQuestionParams = PaginationParams;
+export type GetQuestionParams = PaginationParams & {
+  id?: string;
+  categoryId?: string;
+  chapterId?: string;
+};
 
 export type GetQuestionResponse = Pagination<Question[]>;
