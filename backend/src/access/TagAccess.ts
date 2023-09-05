@@ -24,4 +24,20 @@ export class TagAccess {
 
     return await qr.manager.find<Tag>(TagEntity.name, options);
   }
+
+  public async findIdNotExists() {
+    const qr = await this.database.getQueryRunner();
+
+    const tags = await qr.manager
+      .createQueryBuilder<Tag>(TagEntity.name, 't')
+      .where('t.id NOT IN (SELECT tag_id FROM question_tag)')
+      .getMany();
+
+    return tags.map((v) => v.id);
+  }
+
+  public async deleteById(id: string) {
+    const qr = await this.database.getQueryRunner();
+    await qr.manager.delete(TagEntity.name, { id });
+  }
 }

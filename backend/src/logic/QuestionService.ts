@@ -10,6 +10,8 @@ import {
   GetQuestionResponse,
   PostQuestionRequest,
   PostQuestionResponse,
+  PutQuestionRequest,
+  PutQuestionResponse,
 } from 'src/model/api';
 import { QuestionEntity } from 'src/model/entity/QuestionEntity';
 import { TagEntity } from 'src/model/entity/TagEntity';
@@ -32,43 +34,93 @@ export class QuestionService {
   @inject(TagAccess)
   private readonly tagAccess!: TagAccess;
 
-  public async addQuestion(
-    data: PostQuestionRequest
-  ): Promise<PostQuestionResponse> {
+  private async getCategoryEntities(names: string[]) {
     const categories = await this.categoryAccess.find();
-    const chapters = await this.chapterAccess.find();
-    const tags = await this.tagAccess.find();
 
-    const thisCategories = data.category?.map((v) => {
+    return names.map((v) => {
       const category = categories.find((c) => c.name === v);
       if (category) return category;
       throw new NotFoundError(`category ${v} not found`);
     });
-    const thisChapters = data.chapter?.map((v) => {
+  }
+
+  private async getChapterEntities(names: string[]) {
+    const chapters = await this.chapterAccess.find();
+
+    return names.map((v) => {
       const chapter = chapters.find((c) => c.name === v);
       if (chapter) return chapter;
       throw new NotFoundError(`chapter ${v} not found`);
     });
-    const thisTags = data.tag?.map((v) => {
-      const tag = tags.find((c) => c.name === v);
-      if (tag) return tag;
-      const newTag = new TagEntity();
-      newTag.name = v;
+  }
 
-      return this.tagAccess.save(newTag);
-    });
+  private async getTagEntities(names: string[]) {
+    const tags = await this.tagAccess.find();
+
+    return await Promise.all(
+      names.map(async (v) => {
+        const tag = tags.find((c) => c.name === v);
+        if (tag) return tag;
+        const newTag = new TagEntity();
+        newTag.name = v;
+
+        return await this.tagAccess.save(newTag);
+      })
+    );
+  }
+
+  public async addQuestion(
+    data: PostQuestionRequest
+  ): Promise<PostQuestionResponse> {
+    const thisCategories = data.category
+      ? await this.getCategoryEntities(data.category)
+      : [];
+    const thisChapters = data.chapter
+      ? await this.getChapterEntities(data.chapter)
+      : [];
+    const thisTags = data.tag ? await this.getTagEntities(data.tag) : [];
 
     const question = new QuestionEntity();
     question.id = uniqid.time();
     question.content = data.content;
     question.answer = data.answer;
     question.answerFormat = data.answerFormat;
-    question.categories = thisCategories ?? [];
-    question.chapters = thisChapters ?? [];
-    question.tags = await Promise.all(thisTags ?? []);
+    question.categories = thisCategories;
+    question.chapters = thisChapters;
+    question.tags = thisTags;
     question.youtube = data.youtube ?? null;
 
     return await this.questionAccess.save(question);
+  }
+
+  public async reviseQuestion(
+    id: string,
+    data: PutQuestionRequest
+  ): Promise<PutQuestionResponse> {
+    const thisCategories = data.category
+      ? await this.getCategoryEntities(data.category)
+      : undefined;
+    const thisChapters = data.chapter
+      ? await this.getChapterEntities(data.chapter)
+      : undefined;
+    const thisTags = data.tag ? await this.getTagEntities(data.tag) : undefined;
+
+    const question = await this.questionAccess.findOneOrFail({ where: { id } });
+    question.content = data.content ?? question.content;
+    question.answer = data.answer ?? question.answer;
+    question.answerFormat = data.answerFormat ?? question.answerFormat;
+    question.categories = thisCategories ?? question.categories;
+    question.chapters = thisChapters ?? question.chapters;
+    question.tags = thisTags ?? question.tags;
+    question.youtube = data.youtube ?? question.youtube;
+
+    const updatedQuestion = await this.questionAccess.save(question);
+
+    // clean up
+    const tagIds = await this.tagAccess.findIdNotExists();
+    await Promise.all(tagIds.map((v) => this.tagAccess.deleteById(v)));
+
+    return updatedQuestion;
   }
 
   public async getQuestionList(

@@ -40,6 +40,15 @@ export class QuestionAccess {
     });
   }
 
+  public async findOneOrFail(options?: FindOneOptions<Question>) {
+    const qr = await this.database.getQueryRunner();
+
+    return await qr.manager.findOneOrFail<Question>(QuestionEntity.name, {
+      relations: { categories: true, chapters: true, tags: true },
+      ...options,
+    });
+  }
+
   public async findDistinctId(options: {
     categoryId?: string[];
     chapterId?: string[];

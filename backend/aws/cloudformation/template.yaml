@@ -113,6 +113,50 @@ Resources:
                   "type": "aws_proxy"
                 }
               }
+            },
+            "/api/question/{id}":{
+              "put": {
+                "produces": [
+                  "application/json"
+                ],
+                "parameters": [{
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "schema": {"type": "string"}
+                }],
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/putQuestion"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-request-validator" : "Validate body, query string parameters, and headers",
+                "x-amazon-apigateway-integration": {
+                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "httpMethod": "POST",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              },
             }
           },
           "definitions": {
@@ -142,6 +186,27 @@ Resources:
               },
               "required": ["content","answer","answerFormat"]
             },
+            "putQuestion": {
+              "type": "object",
+              "properties": {
+                "content": {"type": "string"},
+                "answer": {"type": "string"},
+                "answerFormat": {"type": "string"},
+                "youtube": {"type": "string"},
+                "category": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "chapter": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "tag": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+              }
+            }
           },
           "x-amazon-apigateway-request-validators" : {
             "Validate body, query string parameters, and headers" : {
