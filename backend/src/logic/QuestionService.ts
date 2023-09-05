@@ -16,6 +16,7 @@ import {
 import { QuestionEntity } from 'src/model/entity/QuestionEntity';
 import { TagEntity } from 'src/model/entity/TagEntity';
 import { NotFoundError } from 'src/model/error';
+import { Pagination } from 'src/model/Pagination';
 
 /**
  * Service class for Question
@@ -125,7 +126,7 @@ export class QuestionService {
 
   public async getQuestionList(
     params: GetQuestionParams | null
-  ): Promise<GetQuestionResponse> {
+  ): Promise<Pagination<GetQuestionResponse>> {
     if (params?.id) {
       const res = await this.questionAccess.findOne({
         where: { id: params.id },

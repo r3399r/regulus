@@ -1,12 +1,11 @@
-import { MathJax } from 'better-react-mathjax';
+import Loader from './component/Loader';
+import AppRoutes from './Routes';
 
-function App() {
-  return (
-    <div className="bg-yellow-50">
-      <div>hello world</div>
-      <MathJax dynamic>{'\\[a+b=3\\]'}</MathJax>
-    </div>
-  );
-}
+const App = () => (
+  <>
+    <AppRoutes />
+    <Loader />
+  </>
+);
 
 export default App;

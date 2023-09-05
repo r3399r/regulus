@@ -1,25 +1,31 @@
 import { MathJaxContext } from 'better-react-mathjax';
-import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { configStore } from './redux/store';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
+const store = configStore();
+
 const root = createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-  <React.StrictMode>
-    <MathJaxContext
-      config={{
-        tex: {
-          macros: {
-            degree: ['^\\circ', 0],
+  <Provider store={store}>
+    <BrowserRouter>
+      <MathJaxContext
+        config={{
+          tex: {
+            macros: {
+              degree: ['^\\circ', 0],
+            },
           },
-        },
-      }}
-    >
-      <App />
-    </MathJaxContext>
-  </React.StrictMode>,
+        }}
+      >
+        <App />
+      </MathJaxContext>
+    </BrowserRouter>
+  </Provider>,
 );
 
 // If you want to start measuring performance in your app, pass a function

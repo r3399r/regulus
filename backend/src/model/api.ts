@@ -1,5 +1,5 @@
 import { Question } from './entity/QuestionEntity';
-import { Pagination, PaginationParams } from './Pagination';
+import { PaginationParams } from './Pagination';
 
 export type PostQuestionRequest = {
   content: string;
@@ -32,4 +32,4 @@ export type GetQuestionParams = PaginationParams & {
   tagId?: string;
 };
 
-export type GetQuestionResponse = Pagination<Question[]>;
+export type GetQuestionResponse = Question[];

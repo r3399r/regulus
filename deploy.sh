@@ -34,11 +34,11 @@ aws cloudformation package --template-file aws/cloudformation/template.yaml --ou
 aws cloudformation deploy --template-file packaged.yaml --stack-name $project-$env-stack --parameter-overrides TargetEnvr=$env Project=$project SubDomain=$subDomain Domain=$domain --no-fail-on-empty-changeset --s3-bucket y-cf-midway-singapore --capabilities CAPABILITY_NAMED_IAM
 echo ====================================================================================
 
-# echo prepare frontend files...
+echo prepare frontend files...
 # npm run compile
-# cp -R lib/src/model ../frontend/src/model/backend
+cp -R lib/src/model ../frontend/src/model/backend
 # cp -R lib/src/constant ../frontend/src/constant/backend
-# echo ====================================================================================
+echo ====================================================================================
 
 # echo prepare api document...
 # cd ../doc

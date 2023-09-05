@@ -10,6 +10,7 @@
 
 # production
 /dist
+/src/model/backend
 
 # misc
 .DS_Store
