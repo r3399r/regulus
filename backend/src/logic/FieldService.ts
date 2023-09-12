@@ -20,9 +20,9 @@ export class FieldService {
 
   public async getAllFields(): Promise<GetFieldResponse> {
     const [category, chapter, tag] = await Promise.all([
-      this.categoryAccess.find(),
-      this.chapterAccess.find(),
-      this.tagAccess.find(),
+      this.categoryAccess.find({ order: { createdAt: 'asc' } }),
+      this.chapterAccess.find({ order: { createdAt: 'asc' } }),
+      this.tagAccess.find({ order: { name: 'asc' } }),
     ]);
 
     return { category, chapter, tag };
