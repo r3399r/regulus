@@ -1,6 +1,7 @@
 import { LambdaContext, LambdaEvent } from 'src/model/Lambda';
 import { DbAccess } from './access/DbAccess';
 import { bindings } from './bindings';
+import field from './routes/field';
 import question from './routes/question';
 import { errorOutput, successOutput } from './util/lambdaHelper';
 
@@ -15,6 +16,9 @@ export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
     switch (category) {
       case 'question':
         res = await question(event);
+        break;
+      case 'field':
+        res = await field(event);
         break;
     }
 

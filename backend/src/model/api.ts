@@ -1,4 +1,7 @@
+import { Category } from './entity/CategoryEntity';
+import { Chapter } from './entity/ChapterEntity';
 import { Question } from './entity/QuestionEntity';
+import { Tag } from './entity/TagEntity';
 import { PaginationParams } from './Pagination';
 
 export type PostQuestionRequest = {
@@ -9,6 +12,7 @@ export type PostQuestionRequest = {
   chapter?: string[];
   tag?: string[];
   youtube?: string;
+  hasSolution: boolean;
 };
 
 export type PostQuestionResponse = Question;
@@ -21,6 +25,7 @@ export type PutQuestionRequest = {
   chapter?: string[];
   tag?: string[];
   youtube?: string;
+  hasSolution?: boolean;
 };
 
 export type PutQuestionResponse = Question;
@@ -33,3 +38,9 @@ export type GetQuestionParams = PaginationParams & {
 };
 
 export type GetQuestionResponse = Question[];
+
+export type GetFieldResponse = {
+  category: Category[];
+  chapter: Chapter[];
+  tag: Tag[];
+};

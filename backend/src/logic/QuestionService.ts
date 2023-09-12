@@ -90,6 +90,7 @@ export class QuestionService {
     question.chapters = thisChapters;
     question.tags = thisTags;
     question.youtube = data.youtube ?? null;
+    question.hasSolution = data.hasSolution;
 
     return await this.questionAccess.save(question);
   }
@@ -114,6 +115,7 @@ export class QuestionService {
     question.chapters = thisChapters ?? question.chapters;
     question.tags = thisTags ?? question.tags;
     question.youtube = data.youtube ?? question.youtube;
+    question.hasSolution = data.hasSolution ?? question.hasSolution;
 
     const updatedQuestion = await this.questionAccess.save(question);
 

@@ -13,7 +13,7 @@ echo domain: $subDomain.$domain
 echo ====================================================================================
 
 # echo execute db scripts...
-# cd ../db
+# cd ./db
 # host=$(aws ssm get-parameter --name $env-db-host | jq .Parameter.Value | sed -e 's/^"//' -e 's/"$//')
 # user=$(aws ssm get-parameter --name $env-db-user | jq .Parameter.Value | sed -e 's/^"//' -e 's/"$//')
 # pwd=$(aws ssm get-parameter --name $env-db-pwd | jq .Parameter.Value | sed -e 's/^"//' -e 's/"$//')

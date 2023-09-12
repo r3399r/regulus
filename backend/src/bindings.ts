@@ -5,6 +5,7 @@ import { ChapterAccess } from './access/ChapterAccess';
 import { DbAccess } from './access/DbAccess';
 import { QuestionAccess } from './access/QuestionAccess';
 import { TagAccess } from './access/TagAccess';
+import { FieldService } from './logic/FieldService';
 import { QuestionService } from './logic/QuestionService';
 import { CategoryEntity } from './model/entity/CategoryEntity';
 import { ChapterEntity } from './model/entity/ChapterEntity';
@@ -37,5 +38,6 @@ container.bind<TagAccess>(TagAccess).toSelf();
 
 // service
 container.bind<QuestionService>(QuestionService).toSelf();
+container.bind<FieldService>(FieldService).toSelf();
 
 export { container as bindings };

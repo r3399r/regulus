@@ -4,6 +4,7 @@ CREATE TABLE question (
     answer STRING NULL,
     answer_format STRING NULL,
     youtube STRING NULL,
+	has_solution BOOLEAN NOT NULL,
 	created_at TIMESTAMP NULL,
 	updated_at TIMESTAMP NULL,
 	PRIMARY KEY (id)
