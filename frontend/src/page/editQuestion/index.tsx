@@ -1,24 +1,19 @@
 import { Button, MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import Form from 'src/component/Form';
 import FormCheckbox from 'src/component/FormCheckbox';
 import FormInput from 'src/component/FormInput';
 import FormMultiSelect from 'src/component/FormMultiSelect';
 import { Category } from 'src/model/backend/entity/CategoryEntity';
 import { Chapter } from 'src/model/backend/entity/ChapterEntity';
-import { getFields } from 'src/service/QuestionService';
-
-type QuestionForm = {
-  content: string;
-  answer: string;
-  answerFormat: string;
-  tag: string;
-  youtube: string;
-  hasSolution: boolean;
-};
+import { QuestionForm } from 'src/model/Form';
+import { openSnackbar } from 'src/redux/uiSlice';
+import { addNewQuestion, getFields } from 'src/service/QuestionService';
 
 const EditQuestion = () => {
+  const dispatch = useDispatch();
   const methods = useForm<QuestionForm>();
   const [category, setCatogery] = useState<Category[]>();
   const [chapter, setChapter] = useState<Chapter[]>();
@@ -31,7 +26,10 @@ const EditQuestion = () => {
   }, []);
 
   const onSubmit = (data: QuestionForm) => {
-    console.log(data);
+    addNewQuestion(data)
+      .then(() => dispatch(openSnackbar({ message: '新增成功', severity: 'success' })))
+      .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })))
+      .finally(() => methods.reset());
   };
 
   if (!category || !chapter) return <></>;
@@ -58,7 +56,7 @@ const EditQuestion = () => {
           ))}
         </FormMultiSelect>
       </div>
-      <FormInput name="tag" label="標籤" helperText="以小逗號分隔" />
+      <FormInput name="tag" label="標籤" helperText="以小逗號分隔" required />
       <FormInput name="youtube" label="Youtube 影片 ID" />
       <div>
         <FormCheckbox name="hasSolution" label="有詳解" />

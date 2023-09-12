@@ -28,7 +28,7 @@ const FormSelect = ({ name, required = false, defaultValue, children, label, ...
           <Select
             label={label}
             required={required}
-            value={value.split(',')}
+            value={value === '' ? [] : value.split(',')}
             multiple
             onChange={(e) => {
               const value = e.target.value;

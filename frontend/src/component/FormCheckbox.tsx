@@ -11,14 +11,14 @@ type Props = CheckboxProps & {
   label?: string;
 };
 
-const FormCheckbox = ({ name, label, required = false, defaultValue, ...props }: Props) => {
+const FormCheckbox = ({ name, label, required = false, defaultChecked, ...props }: Props) => {
   const { control } = useFormContext();
 
   return (
     <Controller
       control={control}
       name={name}
-      defaultValue={defaultValue ?? ''}
+      defaultValue={defaultChecked ?? false}
       rules={{ required }}
       render={({ field }) => (
         <FormControlLabel control={<Checkbox {...props} />} label={label} {...field} />

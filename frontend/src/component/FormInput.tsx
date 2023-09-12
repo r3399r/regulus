@@ -32,7 +32,13 @@ const FormInput = ({
       defaultValue={defaultValue ?? ''}
       rules={{ required, minLength, maxLength }}
       render={({ field }) => (
-        <TextField required={required} {...field} {...props} error={!!errors[name]} />
+        <TextField
+          required={required}
+          autoComplete="off"
+          {...field}
+          {...props}
+          error={!!errors[name]}
+        />
       )}
     />
   );

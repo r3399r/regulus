@@ -35,7 +35,7 @@ aws cloudformation deploy --template-file packaged.yaml --stack-name $project-$e
 echo ====================================================================================
 
 echo prepare frontend files...
-# npm run compile
+rm -rf ../frontend/src/model/backend
 cp -R lib/src/model ../frontend/src/model/backend
 # cp -R lib/src/constant ../frontend/src/constant/backend
 echo ====================================================================================
