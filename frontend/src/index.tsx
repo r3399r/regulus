@@ -18,6 +18,7 @@ root.render(
           tex: {
             macros: {
               degree: ['^\\circ', 0],
+              textcirc: ['\\enclose{circle}{\\kern .06em \\text{#1}\\kern .06em}', 1],
             },
           },
         }}

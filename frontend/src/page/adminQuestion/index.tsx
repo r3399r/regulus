@@ -74,8 +74,8 @@ const AdminQuestion = () => {
           minRows={3}
           helperText="MathJax: \(...\) \[...\]"
         />
-        <FormInput name="answer" label="答案" required />
         <FormInput name="answerFormat" label="答案格式" required />
+        <FormInput name="answer" label="答案" required />
         <div className="flex gap-4">
           <FormMultiSelect name="category" label="類別">
             {category.map((v) => (
@@ -107,8 +107,14 @@ const AdminQuestion = () => {
         <div className="text-xl font-bold">預覽</div>
         <MathJax dynamic>
           <div className="mt-4">{methods.watch('content')}</div>
-          <div>Ans: {methods.watch('answer')}</div>
-          <div>Ans: {methods.watch('answerFormat')}</div>
+          <div className="flex gap-2">
+            <div>Ans:</div>
+            <div>{methods.watch('answerFormat')}</div>
+          </div>
+          <div className="flex gap-2">
+            <div>Ans:</div>
+            <div>{methods.watch('answer')}</div>
+          </div>
         </MathJax>
       </div>
     </div>

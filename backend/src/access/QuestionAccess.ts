@@ -1,9 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
-import { QuestionCategoryEntity } from 'src/model/entity/QuestionCategoryEntity';
-import { QuestionChapterEntity } from 'src/model/entity/QuestionChapterEntity';
 import { Question, QuestionEntity } from 'src/model/entity/QuestionEntity';
-import { QuestionTagEntity } from 'src/model/entity/QuestionTagEntity';
 import { Database } from 'src/util/Database';
 
 /**
@@ -50,53 +47,44 @@ export class QuestionAccess {
   }
 
   public async findDistinctId(options: {
-    categoryId?: string[];
-    chapterId?: string[];
-    tagId?: string[];
+    category?: string[];
+    chapter?: string[];
+    tag?: string[];
   }): Promise<string[]> {
     const qr = await this.database.getQueryRunner();
     const queryBuilder = qr.manager
       .createQueryBuilder(QuestionEntity.name, 'q')
       .distinctOn(['q.id'])
-      .innerJoinAndSelect(
-        QuestionCategoryEntity.name,
-        'qc',
-        'qc.question_id = q.id'
-      )
-      .innerJoinAndSelect(
-        QuestionChapterEntity.name,
-        'qc2',
-        'qc2.question_id = q.id'
-      )
-      .innerJoinAndSelect(
-        QuestionTagEntity.name,
-        'qt',
-        'qt.question_id = q.id'
-      );
+      .innerJoinAndSelect('question_category', 'qc', 'qc.question_id = q.id')
+      .innerJoinAndSelect('category', 'c', 'qc.category_id = c.id')
+      .innerJoinAndSelect('question_chapter', 'qc2', 'qc2.question_id = q.id')
+      .innerJoinAndSelect('chapter', 'c2', 'qc2.chapter_id = c2.id')
+      .innerJoinAndSelect('question_tag', 'qt', 'qt.question_id = q.id')
+      .innerJoinAndSelect('tag', 't', 'qt.tag_id = t.id');
 
-    if (options.categoryId) {
-      queryBuilder.where('qc.category_id IN (:...id)', {
-        id: options.categoryId,
+    if (options.category) {
+      queryBuilder.where('c.name IN (:...category)', {
+        category: options.category,
       });
-      if (options.chapterId)
-        queryBuilder.andWhere('qc2.chapter_id IN (:...id)', {
-          id: options.chapterId,
+      if (options.chapter)
+        queryBuilder.andWhere('c2.name IN (:...chapter)', {
+          chapter: options.chapter,
         });
-      if (options.tagId)
-        queryBuilder.andWhere('qt.tag_id IN (:...id)', {
-          id: options.tagId,
+      if (options.tag)
+        queryBuilder.andWhere('t.name IN (:...tag)', {
+          tag: options.tag,
         });
-    } else if (options.chapterId) {
-      queryBuilder.where('qc2.chapter_id IN (:...id)', {
-        id: options.chapterId,
+    } else if (options.chapter) {
+      queryBuilder.where('c2.name IN (:...chapter)', {
+        chapter: options.chapter,
       });
-      if (options.tagId)
-        queryBuilder.andWhere('qt.tag_id IN (:...id)', {
-          id: options.tagId,
+      if (options.tag)
+        queryBuilder.andWhere('t.name IN (:...tag)', {
+          tag: options.tag,
         });
-    } else if (options.tagId)
-      queryBuilder.where('qt.tag_id IN (:...id)', {
-        id: options.tagId,
+    } else if (options.tag)
+      queryBuilder.where('t.name IN (:...tag)', {
+        tag: options.tag,
       });
 
     const res = await queryBuilder.getRawMany();

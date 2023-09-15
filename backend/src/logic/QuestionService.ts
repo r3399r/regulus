@@ -143,16 +143,16 @@ export class QuestionService {
     const limit = params?.limit ? Number(params.limit) : 50;
     const offset = params?.offset ? Number(params.offset) : 0;
 
-    let questionIds: string[] = [];
-    if (params?.categoryId || params?.chapterId)
+    let questionIds: string[] | null = null;
+    if (params?.category || params?.chapter || params?.tag)
       questionIds = await this.questionAccess.findDistinctId({
-        categoryId: params?.categoryId?.split(','),
-        chapterId: params?.chapterId?.split(','),
-        tagId: params?.tagId?.split(','),
+        category: params?.category?.split(','),
+        chapter: params?.chapter?.split(','),
+        tag: params?.tag?.split(','),
       });
 
     const res = await this.questionAccess.findAndCount({
-      where: questionIds.length > 0 ? { id: In(questionIds) } : undefined,
+      where: questionIds ? { id: In(questionIds) } : undefined,
       order: { createdAt: 'desc' },
       take: limit,
       skip: offset,

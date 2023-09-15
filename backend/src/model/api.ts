@@ -32,9 +32,9 @@ export type PutQuestionResponse = Question;
 
 export type GetQuestionParams = PaginationParams & {
   id?: string;
-  categoryId?: string;
-  chapterId?: string;
-  tagId?: string;
+  category?: string;
+  chapter?: string;
+  tag?: string;
 };
 
 export type GetQuestionResponse = Question[];
