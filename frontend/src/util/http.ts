@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
 
 // eslint-disable-next-line
 type Options<D = any, P = any> = {
@@ -35,54 +35,69 @@ const publicRequestConfig = <D = unknown, P = any>(
 });
 
 // eslint-disable-next-line
-const privateRequestConfig = <D = unknown, P = any>(
+const publicRequest = async <T, D = unknown, P = any>(
   method: string,
   url: string,
   options?: Options<D, P>,
-) => ({
-  ...defaultConfig,
-  headers: {
-    ...defaultHeader,
-    ...options?.headers,
-    ...({ ['x-api-code']: localStorage.getItem('token') ?? '' } as RawAxiosRequestHeaders),
-  },
-  data: options?.data,
-  params: options?.params,
-  url,
-  method,
-});
+) => {
+  try {
+    return await axios.request<T>(publicRequestConfig<unknown, P>(method, url, options));
+  } catch (e) {
+    // eslint-disable-next-line
+    const error = e as AxiosError<any>;
+    throw error.response?.data.message;
+  }
+};
+
+// eslint-disable-next-line
+// const privateRequestConfig = <D = unknown, P = any>(
+//   method: string,
+//   url: string,
+//   options?: Options<D, P>,
+// ) => ({
+//   ...defaultConfig,
+//   headers: {
+//     ...defaultHeader,
+//     ...options?.headers,
+//     ...({ ['x-api-code']: localStorage.getItem('token') ?? '' } as RawAxiosRequestHeaders),
+//   },
+//   data: options?.data,
+//   params: options?.params,
+//   url,
+//   method,
+// });
 
 // eslint-disable-next-line
 const get = async <T, P = any>(url: string, options?: Options<any, P>) =>
-  await axios.request<T>(publicRequestConfig<unknown, P>('get', url, options));
+  await publicRequest<T, unknown, P>('get', url, options);
 
 const post = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(publicRequestConfig<D>('post', url, options));
+  await publicRequest<T, D>('post', url, options);
 
 const put = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(publicRequestConfig<D>('put', url, options));
+  await publicRequest<T, D>('put', url, options);
 
 const patch = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(publicRequestConfig<D>('patch', url, options));
+  await publicRequest<T, D>('patch', url, options);
 
 const sendDelete = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(publicRequestConfig<D>('delete', url, options));
+  await publicRequest<T, D>('delete', url, options);
 
 // eslint-disable-next-line
-const authGet = async <T, P = any>(url: string, options?: Options<any, P>) =>
-  await axios.request<T>(privateRequestConfig<unknown, P>('get', url, options));
+// const authGet = async <T, P = any>(url: string, options?: Options<any, P>) =>
+//   await axios.request<T>(privateRequestConfig<unknown, P>('get', url, options));
 
-const authPost = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(privateRequestConfig<D>('post', url, options));
+// const authPost = async <T, D = unknown>(url: string, options?: Options<D>) =>
+//   await axios.request<T>(privateRequestConfig<D>('post', url, options));
 
-const authPut = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(privateRequestConfig<D>('put', url, options));
+// const authPut = async <T, D = unknown>(url: string, options?: Options<D>) =>
+//   await axios.request<T>(privateRequestConfig<D>('put', url, options));
 
-const authPatch = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(privateRequestConfig<D>('patch', url, options));
+// const authPatch = async <T, D = unknown>(url: string, options?: Options<D>) =>
+//   await axios.request<T>(privateRequestConfig<D>('patch', url, options));
 
-const authDelete = async <T, D = unknown>(url: string, options?: Options<D>) =>
-  await axios.request<T>(privateRequestConfig<D>('delete', url, options));
+// const authDelete = async <T, D = unknown>(url: string, options?: Options<D>) =>
+//   await axios.request<T>(privateRequestConfig<D>('delete', url, options));
 
 export default {
   get,
@@ -90,9 +105,9 @@ export default {
   put,
   patch,
   delete: sendDelete,
-  authGet,
-  authPost,
-  authPut,
-  authPatch,
-  authDelete,
+  // authGet,
+  // authPost,
+  // authPut,
+  // authPatch,
+  // authDelete,
 };

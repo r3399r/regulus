@@ -6,17 +6,24 @@ import Form from 'src/component/Form';
 import FormCheckbox from 'src/component/FormCheckbox';
 import FormInput from 'src/component/FormInput';
 import FormMultiSelect from 'src/component/FormMultiSelect';
+import useQuery from 'src/hook/useQuery';
 import { Category } from 'src/model/backend/entity/CategoryEntity';
 import { Chapter } from 'src/model/backend/entity/ChapterEntity';
 import { QuestionForm } from 'src/model/Form';
 import { openSnackbar } from 'src/redux/uiSlice';
-import { addNewQuestion, getFields } from 'src/service/QuestionService';
+import {
+  addNewQuestion,
+  editQuestion,
+  getFields,
+  getQuestionById,
+} from 'src/service/QuestionService';
 
-const EditQuestion = () => {
+const AdminQuestion = () => {
   const dispatch = useDispatch();
   const methods = useForm<QuestionForm>();
   const [category, setCatogery] = useState<Category[]>();
   const [chapter, setChapter] = useState<Chapter[]>();
+  const { id } = useQuery<{ id?: string }>();
 
   useEffect(() => {
     getFields().then((res) => {
@@ -25,11 +32,31 @@ const EditQuestion = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (id === undefined) return;
+    getQuestionById(id).then((res) => {
+      if (res.length !== 1) return;
+      methods.setValue('content', res[0].content);
+      methods.setValue('answer', res[0].answer ?? '');
+      methods.setValue('answerFormat', res[0].answerFormat ?? '');
+      methods.setValue('category', res[0].categories.map((v) => v.name).join(','));
+      methods.setValue('chapter', res[0].chapters.map((v) => v.name).join(','));
+      methods.setValue('tag', res[0].tags.map((v) => v.name).join(','));
+      methods.setValue('youtube', res[0].youtube ?? '');
+      methods.setValue('hasSolution', res[0].hasSolution);
+    });
+  }, [id]);
+
   const onSubmit = (data: QuestionForm) => {
-    addNewQuestion(data)
-      .then(() => dispatch(openSnackbar({ message: '新增成功', severity: 'success' })))
-      .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })))
-      .finally(() => methods.reset());
+    if (id === undefined)
+      addNewQuestion(data)
+        .then(() => dispatch(openSnackbar({ message: '新增成功', severity: 'success' })))
+        .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })))
+        .finally(() => methods.reset());
+    else
+      editQuestion(id, data)
+        .then(() => dispatch(openSnackbar({ message: '編輯成功', severity: 'success' })))
+        .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
   };
 
   if (!category || !chapter) return <></>;
@@ -63,11 +90,11 @@ const EditQuestion = () => {
       </div>
       <div>
         <Button type="submit" variant="contained">
-          Submit
+          {id === undefined ? '新增' : '編輯'}
         </Button>
       </div>
     </Form>
   );
 };
 
-export default EditQuestion;
+export default AdminQuestion;

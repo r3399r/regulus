@@ -15,6 +15,17 @@ export const getFields = async () => {
   }
 };
 
+export const getQuestionById = async (id: string) => {
+  try {
+    dispatch(startWaiting());
+    const res = await questionEndpoint.getQuestion({ id });
+
+    return res.data;
+  } finally {
+    dispatch(finishWaiting());
+  }
+};
+
 export const getQuestionList = async () => {
   try {
     dispatch(startWaiting());
@@ -30,6 +41,24 @@ export const addNewQuestion = async (formData: QuestionForm) => {
   try {
     dispatch(startWaiting());
     await questionEndpoint.postQuestion({
+      content: formData.content,
+      answer: formData.answer,
+      answerFormat: formData.answerFormat,
+      category: formData.category.split(/[ ,]+/),
+      chapter: formData.chapter.split(/[ ,]+/),
+      tag: formData.tag.split(/[ ,]+/),
+      youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
+      hasSolution: formData.hasSolution,
+    });
+  } finally {
+    dispatch(finishWaiting());
+  }
+};
+
+export const editQuestion = async (id: string, formData: QuestionForm) => {
+  try {
+    dispatch(startWaiting());
+    await questionEndpoint.putQuestion(id, {
       content: formData.content,
       answer: formData.answer,
       answerFormat: formData.answerFormat,
