@@ -1,4 +1,5 @@
 import { Button, MenuItem } from '@mui/material';
+import { MathJax } from 'better-react-mathjax';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
@@ -62,38 +63,55 @@ const AdminQuestion = () => {
   if (!category || !chapter) return <></>;
 
   return (
-    <Form methods={methods} onSubmit={onSubmit} className="m-4 flex flex-col gap-4">
-      <div className="text-xl font-bold">題目編輯器</div>
-      <FormInput name="content" label="內容" multiline required minRows={3} />
-      <FormInput name="answer" label="答案" required />
-      <FormInput name="answerFormat" label="答案格式" required />
-      <div className="flex gap-4">
-        <FormMultiSelect name="category" label="類別">
-          {category.map((v) => (
-            <MenuItem key={v.id} value={v.name}>
-              {v.name}
-            </MenuItem>
-          ))}
-        </FormMultiSelect>
-        <FormMultiSelect name="chapter" label="章節" required>
-          {chapter.map((v) => (
-            <MenuItem key={v.id} value={v.name}>
-              {v.name}
-            </MenuItem>
-          ))}
-        </FormMultiSelect>
+    <div className="flex gap-4">
+      <Form methods={methods} onSubmit={onSubmit} className="my-4 ml-4 flex w-1/2 flex-col gap-4">
+        <div className="text-xl font-bold">題目編輯器</div>
+        <FormInput
+          name="content"
+          label="內容"
+          multiline
+          required
+          minRows={3}
+          helperText="MathJax: \(...\) \[...\]"
+        />
+        <FormInput name="answer" label="答案" required />
+        <FormInput name="answerFormat" label="答案格式" required />
+        <div className="flex gap-4">
+          <FormMultiSelect name="category" label="類別">
+            {category.map((v) => (
+              <MenuItem key={v.id} value={v.name}>
+                {v.name}
+              </MenuItem>
+            ))}
+          </FormMultiSelect>
+          <FormMultiSelect name="chapter" label="章節" required>
+            {chapter.map((v) => (
+              <MenuItem key={v.id} value={v.name}>
+                {v.name}
+              </MenuItem>
+            ))}
+          </FormMultiSelect>
+        </div>
+        <FormInput name="tag" label="標籤" helperText="以小逗號分隔" required />
+        <FormInput name="youtube" label="Youtube 影片 ID" />
+        <div>
+          <FormCheckbox name="hasSolution" label="有詳解" />
+        </div>
+        <div>
+          <Button type="submit" variant="contained">
+            {id === undefined ? '新增' : '編輯'}
+          </Button>
+        </div>
+      </Form>
+      <div className="my-4 mr-4 w-1/2">
+        <div className="text-xl font-bold">預覽</div>
+        <MathJax dynamic>
+          <div className="mt-4">{methods.watch('content')}</div>
+          <div>Ans: {methods.watch('answer')}</div>
+          <div>Ans: {methods.watch('answerFormat')}</div>
+        </MathJax>
       </div>
-      <FormInput name="tag" label="標籤" helperText="以小逗號分隔" required />
-      <FormInput name="youtube" label="Youtube 影片 ID" />
-      <div>
-        <FormCheckbox name="hasSolution" label="有詳解" />
-      </div>
-      <div>
-        <Button type="submit" variant="contained">
-          {id === undefined ? '新增' : '編輯'}
-        </Button>
-      </div>
-    </Form>
+    </div>
   );
 };
 

@@ -17,7 +17,7 @@ const QuestionPage = () => {
         <div className="flex flex-wrap gap-4">
           {question?.map((v) => (
             <Card key={v.id} className="w-[calc(50%-8px)] p-4">
-              <div className="text-sm text-gray-500">ID: {v.id}</div>
+              <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
               <div className="flex gap-2">
                 <div className="flex gap-2">
                   {v.categories.map((o) => (

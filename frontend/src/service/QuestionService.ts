@@ -18,7 +18,7 @@ export const getFields = async () => {
 export const getQuestionById = async (id: string) => {
   try {
     dispatch(startWaiting());
-    const res = await questionEndpoint.getQuestion({ id });
+    const res = await questionEndpoint.getQuestion({ id: id.toLowerCase() });
 
     return res.data;
   } finally {
@@ -58,7 +58,7 @@ export const addNewQuestion = async (formData: QuestionForm) => {
 export const editQuestion = async (id: string, formData: QuestionForm) => {
   try {
     dispatch(startWaiting());
-    await questionEndpoint.putQuestion(id, {
+    await questionEndpoint.putQuestion(id.toLowerCase(), {
       content: formData.content,
       answer: formData.answer,
       answerFormat: formData.answerFormat,
