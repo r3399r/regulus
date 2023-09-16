@@ -3,6 +3,7 @@ import questionEndpoint from 'src/api/questionEndpoint';
 import { QuestionForm } from 'src/model/Form';
 import { dispatch } from 'src/redux/store';
 import { finishWaiting, startWaiting } from 'src/redux/uiSlice';
+import { file2Base64 } from 'src/util/fileConverter';
 
 export const getFields = async () => {
   try {
@@ -37,7 +38,7 @@ export const getQuestionList = async () => {
   }
 };
 
-export const addNewQuestion = async (formData: QuestionForm) => {
+export const addNewQuestion = async (formData: QuestionForm, image?: File[]) => {
   try {
     dispatch(startWaiting());
     await questionEndpoint.postQuestion({
@@ -49,13 +50,14 @@ export const addNewQuestion = async (formData: QuestionForm) => {
       tag: formData.tag.split(/[ ,]+/),
       youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
       hasSolution: formData.hasSolution,
+      image: image ? await Promise.all(image.map((v) => file2Base64(v))) : undefined,
     });
   } finally {
     dispatch(finishWaiting());
   }
 };
 
-export const editQuestion = async (id: string, formData: QuestionForm) => {
+export const editQuestion = async (id: string, formData: QuestionForm, image?: File[]) => {
   try {
     dispatch(startWaiting());
     await questionEndpoint.putQuestion(id.toLowerCase(), {
@@ -67,6 +69,7 @@ export const editQuestion = async (id: string, formData: QuestionForm) => {
       tag: formData.tag.split(/[ ,]+/),
       youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
       hasSolution: formData.hasSolution,
+      image: image ? await Promise.all(image.map((v) => file2Base64(v))) : undefined,
     });
   } finally {
     dispatch(finishWaiting());

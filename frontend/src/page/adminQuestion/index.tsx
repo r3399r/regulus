@@ -1,6 +1,6 @@
-import { Button, MenuItem } from '@mui/material';
+import { Button, MenuItem, TextField } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import Form from 'src/component/Form';
@@ -25,6 +25,8 @@ const AdminQuestion = () => {
   const [category, setCatogery] = useState<Category[]>();
   const [chapter, setChapter] = useState<Chapter[]>();
   const { id } = useQuery<{ id?: string }>();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File[]>();
 
   useEffect(() => {
     getFields().then((res) => {
@@ -50,12 +52,15 @@ const AdminQuestion = () => {
 
   const onSubmit = (data: QuestionForm) => {
     if (id === undefined)
-      addNewQuestion(data)
-        .then(() => dispatch(openSnackbar({ message: '新增成功', severity: 'success' })))
-        .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })))
-        .finally(() => methods.reset());
+      addNewQuestion(data, image)
+        .then(() => {
+          dispatch(openSnackbar({ message: '新增成功', severity: 'success' }));
+          methods.reset();
+          setImage(undefined);
+        })
+        .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
     else
-      editQuestion(id, data)
+      editQuestion(id, data, image)
         .then(() => dispatch(openSnackbar({ message: '編輯成功', severity: 'success' })))
         .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
   };
@@ -74,6 +79,17 @@ const AdminQuestion = () => {
           minRows={3}
           helperText="MathJax: \(...\) \[...\]"
         />
+        {image?.map((v, i) => (
+          <Button
+            key={i}
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setImage(image.filter((o) => o !== v));
+            }}
+          >{`刪除 ${v.name}`}</Button>
+        ))}
+        <TextField label="圖片" onClick={() => inputRef.current?.click()} />
         <FormInput name="answerFormat" label="答案格式" required />
         <FormInput name="answer" label="答案" required />
         <div className="flex gap-4">
@@ -107,6 +123,13 @@ const AdminQuestion = () => {
         <div className="text-xl font-bold">預覽</div>
         <MathJax dynamic>
           <div className="mt-4">{methods.watch('content')}</div>
+          <div className="flex flex-wrap">
+            {image?.map((v, i) => (
+              <div key={i}>
+                <img src={URL.createObjectURL(v)} />
+              </div>
+            ))}
+          </div>
           <div className="flex gap-2">
             <div>Ans:</div>
             <div>{methods.watch('answerFormat')}</div>
@@ -117,6 +140,17 @@ const AdminQuestion = () => {
           </div>
         </MathJax>
       </div>
+      <input
+        type="file"
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          if (e.target.files && e.target.files.length > 0)
+            setImage([...(image ?? []), e.target.files[0]]);
+        }}
+        ref={inputRef}
+        className="hidden"
+        accept="image/*"
+        multiple={false}
+      />
     </div>
   );
 };

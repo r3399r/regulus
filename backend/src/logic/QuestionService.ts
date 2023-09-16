@@ -17,6 +17,7 @@ import { QuestionEntity } from 'src/model/entity/QuestionEntity';
 import { TagEntity } from 'src/model/entity/TagEntity';
 import { NotFoundError } from 'src/model/error';
 import { Pagination } from 'src/model/Pagination';
+import { AwsUtil } from 'src/util/AwsUtil';
 
 /**
  * Service class for Question
@@ -34,6 +35,9 @@ export class QuestionService {
 
   @inject(TagAccess)
   private readonly tagAccess!: TagAccess;
+
+  @inject(AwsUtil)
+  private readonly awsUtil!: AwsUtil;
 
   private async getCategoryEntities(names: string[]) {
     const categories = await this.categoryAccess.find();
@@ -91,8 +95,19 @@ export class QuestionService {
     question.tags = thisTags;
     question.youtube = data.youtube ?? null;
     question.hasSolution = data.hasSolution;
+    question.hasImage = data.image === undefined ? false : true;
 
-    return await this.questionAccess.save(question);
+    const newQuestion = await this.questionAccess.save(question);
+
+    if (data.image) {
+      let n = 0;
+      for (const i of data.image) {
+        n = n + 1;
+        await this.awsUtil.s3Upload(i, `${newQuestion.id}/${n}`);
+      }
+    }
+
+    return newQuestion;
   }
 
   public async reviseQuestion(
@@ -116,8 +131,23 @@ export class QuestionService {
     question.tags = thisTags ?? question.tags;
     question.youtube = data.youtube ?? question.youtube;
     question.hasSolution = data.hasSolution ?? question.hasSolution;
+    question.hasImage = data.image === undefined ? false : true;
 
     const updatedQuestion = await this.questionAccess.save(question);
+
+    // re-upload images
+    const s3Objects = await this.awsUtil.listS3Objects(question.id);
+    if (s3Objects.Contents)
+      await this.awsUtil.deleteS3Objects(
+        s3Objects.Contents.map((v) => v.Key ?? '').filter((v) => v !== '')
+      );
+    if (data.image) {
+      let n = 0;
+      for (const i of data.image) {
+        n = n + 1;
+        await this.awsUtil.s3Upload(i, `${question.id}/${n}`);
+      }
+    }
 
     // clean up
     const tagIds = await this.tagAccess.findIdNotExists();
@@ -133,9 +163,17 @@ export class QuestionService {
       const res = await this.questionAccess.findOne({
         where: { id: params.id },
       });
+      let imageUrl: string[] | null = null;
+      if (res?.hasImage) {
+        const s3Objects = await this.awsUtil.listS3Objects(params.id);
+        if (s3Objects.Contents && s3Objects.Contents.length > 0)
+          imageUrl = s3Objects.Contents.map((v) =>
+            v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
+          ).filter((v) => v !== '');
+      }
 
       return {
-        data: res ? [res] : [],
+        data: res ? [{ ...res, imageUrl }] : [],
         paginate: { limit: 0, offset: 0, count: res ? 1 : 0 },
       };
     }
@@ -158,6 +196,21 @@ export class QuestionService {
       skip: offset,
     });
 
-    return { data: res[0], paginate: { limit, offset, count: res[1] } };
+    const questions = await Promise.all(
+      res[0].map(async (q) => {
+        let imageUrl: string[] | null = null;
+        if (q.hasImage) {
+          const s3Objects = await this.awsUtil.listS3Objects(q.id);
+          if (s3Objects.Contents && s3Objects.Contents.length > 0)
+            imageUrl = s3Objects.Contents.map((v) =>
+              v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
+            ).filter((v) => v !== '');
+        }
+
+        return { ...q, imageUrl };
+      })
+    );
+
+    return { data: questions, paginate: { limit, offset, count: res[1] } };
   }
 }

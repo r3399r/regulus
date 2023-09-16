@@ -17,6 +17,7 @@ export type Question = {
   answerFormat: string | null;
   youtube: string | null;
   hasSolution: boolean;
+  hasImage: boolean;
   categories: Category[];
   chapters: Chapter[];
   tags: Tag[];
@@ -43,6 +44,9 @@ export class QuestionEntity implements Question {
 
   @Column({ type: 'boolean', name: 'has_solution' })
   hasSolution = false;
+
+  @Column({ type: 'boolean', name: 'has_image' })
+  hasImage = false;
 
   @Column({ type: 'timestamp', name: 'created_at', default: null })
   createdAt!: string;

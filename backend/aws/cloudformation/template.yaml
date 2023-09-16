@@ -35,6 +35,7 @@ Resources:
               - sts:AssumeRole
       RoleName: !Sub ${Project}-${TargetEnvr}-lambda-execution-role
       ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
   ##############################################
   ##### RESTful API and associated Lambdas #####
@@ -381,3 +382,7 @@ Resources:
                 }
             ]
           }'
+  S3BucketStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${Project}-${TargetEnvr}-storage

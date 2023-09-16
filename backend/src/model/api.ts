@@ -13,6 +13,7 @@ export type PostQuestionRequest = {
   tag?: string[];
   youtube?: string;
   hasSolution: boolean;
+  image?: string[];
 };
 
 export type PostQuestionResponse = Question;
@@ -26,6 +27,7 @@ export type PutQuestionRequest = {
   tag?: string[];
   youtube?: string;
   hasSolution?: boolean;
+  image?: string[];
 };
 
 export type PutQuestionResponse = Question;
@@ -37,7 +39,9 @@ export type GetQuestionParams = PaginationParams & {
   tag?: string;
 };
 
-export type GetQuestionResponse = Question[];
+export type GetQuestionResponse = (Question & {
+  imageUrl: string[] | null;
+})[];
 
 export type GetFieldResponse = {
   category: Category[];

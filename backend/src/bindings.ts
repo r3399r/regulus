@@ -1,3 +1,4 @@
+import { S3 } from 'aws-sdk';
 import { Container } from 'inversify';
 import 'reflect-metadata';
 import { CategoryAccess } from './access/CategoryAccess';
@@ -13,11 +14,13 @@ import { QuestionCategoryEntity } from './model/entity/QuestionCategoryEntity';
 import { QuestionChapterEntity } from './model/entity/QuestionChapterEntity';
 import { QuestionEntity } from './model/entity/QuestionEntity';
 import { TagEntity } from './model/entity/TagEntity';
+import { AwsUtil } from './util/AwsUtil';
 import { Database, dbEntitiesBindingId } from './util/Database';
 
 const container: Container = new Container();
 
 container.bind<Database>(Database).toSelf().inSingletonScope();
+container.bind<AwsUtil>(AwsUtil).toSelf();
 
 // bind repeatedly for db entities
 container.bind<Function>(dbEntitiesBindingId).toFunction(QuestionEntity);
@@ -39,5 +42,8 @@ container.bind<TagAccess>(TagAccess).toSelf();
 // service
 container.bind<QuestionService>(QuestionService).toSelf();
 container.bind<FieldService>(FieldService).toSelf();
+
+// AWS
+container.bind<S3>(S3).toDynamicValue(() => new S3());
 
 export { container as bindings };
