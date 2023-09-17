@@ -27,6 +27,7 @@ const AdminQuestion = () => {
   const { id } = useQuery<{ id?: string }>();
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<File[]>();
+  const [imageUrl, setImageUrl] = useState<string[] | null>(null);
 
   useEffect(() => {
     getFields().then((res) => {
@@ -47,6 +48,7 @@ const AdminQuestion = () => {
       methods.setValue('tag', res[0].tags.map((v) => v.name).join(','));
       methods.setValue('youtube', res[0].youtube ?? '');
       methods.setValue('hasSolution', res[0].hasSolution);
+      setImageUrl(res[0].imageUrl);
     });
   }, [id]);
 
@@ -85,7 +87,8 @@ const AdminQuestion = () => {
             variant="contained"
             color="error"
             onClick={() => {
-              setImage(image.filter((o) => o !== v));
+              if (image.length === 1) setImage(undefined);
+              else setImage(image.filter((o) => o !== v));
             }}
           >{`刪除 ${v.name}`}</Button>
         ))}
@@ -124,11 +127,17 @@ const AdminQuestion = () => {
         <MathJax dynamic>
           <div className="mt-4">{methods.watch('content')}</div>
           <div className="flex flex-wrap">
-            {image?.map((v, i) => (
-              <div key={i}>
-                <img src={URL.createObjectURL(v)} />
-              </div>
-            ))}
+            {image
+              ? image.map((v, i) => (
+                  <div key={i}>
+                    <img src={URL.createObjectURL(v)} />
+                  </div>
+                ))
+              : imageUrl?.map((v, i) => (
+                  <div key={i}>
+                    <img src={v} />
+                  </div>
+                ))}
           </div>
           <div className="flex gap-2">
             <div>Ans:</div>
@@ -144,12 +153,12 @@ const AdminQuestion = () => {
         type="file"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           if (e.target.files && e.target.files.length > 0)
-            setImage([...(image ?? []), e.target.files[0]]);
+            setImage([...(image ?? []), ...e.target.files]);
         }}
         ref={inputRef}
         className="hidden"
         accept="image/*"
-        multiple={false}
+        multiple={true}
       />
     </div>
   );

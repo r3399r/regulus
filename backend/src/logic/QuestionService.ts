@@ -123,6 +123,23 @@ export class QuestionService {
     const thisTags = data.tag ? await this.getTagEntities(data.tag) : undefined;
 
     const question = await this.questionAccess.findOneOrFail({ where: { id } });
+
+    // re-upload images
+    if (question.hasImage) {
+      const s3Objects = await this.awsUtil.listS3Objects(question.id);
+      if (s3Objects.Contents)
+        await this.awsUtil.deleteS3Objects(
+          s3Objects.Contents.map((v) => v.Key ?? '').filter((v) => v !== '')
+        );
+    }
+    if (data.image) {
+      let n = 0;
+      for (const i of data.image) {
+        n = n + 1;
+        await this.awsUtil.s3Upload(i, `${question.id}/${n}`);
+      }
+    }
+
     question.content = data.content ?? question.content;
     question.answer = data.answer ?? question.answer;
     question.answerFormat = data.answerFormat ?? question.answerFormat;
@@ -134,20 +151,6 @@ export class QuestionService {
     question.hasImage = data.image === undefined ? false : true;
 
     const updatedQuestion = await this.questionAccess.save(question);
-
-    // re-upload images
-    const s3Objects = await this.awsUtil.listS3Objects(question.id);
-    if (s3Objects.Contents)
-      await this.awsUtil.deleteS3Objects(
-        s3Objects.Contents.map((v) => v.Key ?? '').filter((v) => v !== '')
-      );
-    if (data.image) {
-      let n = 0;
-      for (const i of data.image) {
-        n = n + 1;
-        await this.awsUtil.s3Upload(i, `${question.id}/${n}`);
-      }
-    }
 
     // clean up
     const tagIds = await this.tagAccess.findIdNotExists();

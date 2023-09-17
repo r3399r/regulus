@@ -1,11 +1,11 @@
 import { Card, Chip } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import { useEffect, useState } from 'react';
-import { Question } from 'src/model/backend/entity/QuestionEntity';
+import { GetQuestionResponse } from 'src/model/backend/api';
 import { getQuestionList } from 'src/service/QuestionService';
 
 const QuestionPage = () => {
-  const [question, setQuestion] = useState<Question[]>();
+  const [question, setQuestion] = useState<GetQuestionResponse>();
 
   useEffect(() => {
     getQuestionList().then((res) => setQuestion(res));
@@ -54,6 +54,13 @@ const QuestionPage = () => {
                 </div>
               </div>
               <div>{v.content}</div>
+              <div className="flex flex-wrap">
+                {v.imageUrl?.map((o, i) => (
+                  <div key={i}>
+                    <img src={o} />
+                  </div>
+                ))}
+              </div>
               <div>Ans: {v.answerFormat}</div>
               <div className="mt-2">Ans: {v.answer}</div>
             </Card>
