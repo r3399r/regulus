@@ -1,6 +1,7 @@
 import fieldEndpoint from 'src/api/fieldEndpoint';
 import questionEndpoint from 'src/api/questionEndpoint';
 import { QuestionForm } from 'src/model/Form';
+import { setQuestion } from 'src/redux/apiSlice';
 import { dispatch } from 'src/redux/store';
 import { finishWaiting, startWaiting } from 'src/redux/uiSlice';
 import { file2Base64 } from 'src/util/fileConverter';
@@ -27,10 +28,12 @@ export const getQuestionById = async (id: string) => {
   }
 };
 
-export const getQuestionList = async () => {
+export const loadQuestionList = async () => {
   try {
     dispatch(startWaiting());
     const res = await questionEndpoint.getQuestion();
+
+    dispatch(setQuestion(res.data));
 
     return res.data;
   } finally {

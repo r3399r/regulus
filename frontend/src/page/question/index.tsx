@@ -1,22 +1,28 @@
-import { Card, Chip } from '@mui/material';
+import { Button, Card, Chip } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
-import { useEffect, useState } from 'react';
-import { GetQuestionResponse } from 'src/model/backend/api';
-import { getQuestionList } from 'src/service/QuestionService';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from 'src/redux/store';
+import { loadQuestionList } from 'src/service/QuestionService';
 
 const QuestionPage = () => {
-  const [question, setQuestion] = useState<GetQuestionResponse>();
+  const navigate = useNavigate();
+  const { question } = useSelector((rootState: RootState) => rootState.api);
 
   useEffect(() => {
-    getQuestionList().then((res) => setQuestion(res));
+    loadQuestionList();
   }, []);
 
   return (
     <div className="p-2">
+      <Button variant="contained" onClick={() => navigate('./print')}>
+        Print
+      </Button>
       <MathJax dynamic>
         <div className="flex flex-wrap gap-4">
           {question?.map((v) => (
-            <Card key={v.id} className="w-[calc(50%-8px)] p-4">
+            <Card key={v.id} className="h-fit w-[calc(50%-8px)] p-4">
               <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
               <div className="flex gap-2">
                 <div className="flex gap-2">
