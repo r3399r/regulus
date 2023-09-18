@@ -1,11 +1,11 @@
 import { Button, TextField } from '@mui/material';
 import { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
-import { RootState } from 'src/redux/store';
+import { GetQuestionResponse } from 'src/model/backend/api';
 
 const Print = () => {
-  const { question } = useSelector((rootState: RootState) => rootState.api);
+  const state = useLocation().state as { question: GetQuestionResponse } | null;
   const componentRef = useRef(null);
   const [width, setWidth] = useState<string>('8');
 
@@ -24,11 +24,11 @@ const Print = () => {
           onChange={(e) => setWidth(e.target.value)}
         />
         <Button variant="contained" onClick={handlePrint}>
-          Print this out
+          列印
         </Button>
       </div>
       <div className="mx-auto my-0 flex flex-wrap justify-center" ref={componentRef}>
-        {question?.map((v) => (
+        {state?.question.map((v) => (
           <div
             key={v.id}
             className="break-inside-avoid border border-solid border-black p-1"

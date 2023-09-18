@@ -16,8 +16,8 @@ const QuestionPage = () => {
 
   return (
     <div className="p-2">
-      <Button variant="contained" onClick={() => navigate('./print')}>
-        Print
+      <Button variant="contained" onClick={() => navigate('./print', { state: { question } })}>
+        列印設定
       </Button>
       <MathJax dynamic>
         <div className="flex flex-wrap gap-4">
