@@ -10,6 +10,7 @@ const Print = () => {
   const componentRef = useRef(null);
   const [display, setDisplay] = useState<boolean>(true);
   const [width, setWidth] = useState<string>('8');
+  const [showId, setShowId] = useState<boolean>(false);
   const [showAnswerFormat, setShowAnswerFormat] = useState<boolean>(false);
   const [showAnswer, setShowAnswer] = useState<boolean>(true);
 
@@ -33,10 +34,14 @@ const Print = () => {
           onChange={(e) => setWidth(e.target.value)}
         />
         <FormControlLabel
+          control={<Checkbox checked={showId} onChange={(e) => setShowId(e.target.checked)} />}
+          label={'顯示 ID'}
+        />
+        <FormControlLabel
           control={
             <Checkbox checked={showAnswer} onChange={(e) => setShowAnswer(e.target.checked)} />
           }
-          label={'顯示「答案」'}
+          label={'顯示答案'}
         />
         <FormControlLabel
           control={
@@ -45,7 +50,7 @@ const Print = () => {
               onChange={(e) => setShowAnswerFormat(e.target.checked)}
             />
           }
-          label={'顯示「答案格式」'}
+          label={'顯示答案格式'}
         />
         <Button variant="contained" onClick={handlePrint}>
           列印
@@ -61,7 +66,7 @@ const Print = () => {
                   className="break-inside-avoid border border-solid border-black p-1"
                   style={{ width: `${width === '' ? 8 : width}cm` }}
                 >
-                  <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
+                  {showId && <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>}
                   <div>{v.content}</div>
                   <div className="flex flex-wrap">
                     {v.imageUrl?.map((o, i) => (
