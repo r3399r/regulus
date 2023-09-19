@@ -14,9 +14,13 @@ root.render(
   <Provider store={store}>
     <BrowserRouter>
       <MathJaxContext
+        version={2}
         config={{
-          tex: {
-            macros: {
+          CommonHTML: { linebreaks: { automatic: true } },
+          SVG: { linebreaks: { automatic: true } },
+          'HTML-CSS': { linebreaks: { automatic: true } },
+          TeX: {
+            Macros: {
               degree: ['^\\circ', 0],
               textcirc: ['\\enclose{circle}{\\kern .06em \\text{#1}\\kern .06em}', 1],
             },
