@@ -62,3 +62,9 @@ export type PutUserRequest = {
   birthday?: string;
   memo?: string;
 };
+
+export type PostResultRequest = {
+  questionId: string;
+  userId: string;
+  score: number;
+};

@@ -6,7 +6,7 @@ import { LambdaEvent } from 'src/model/Lambda';
 let event: LambdaEvent;
 let service: FieldService;
 
-export const field = async (lambdaEvent: LambdaEvent) => {
+export default async (lambdaEvent: LambdaEvent) => {
   event = lambdaEvent;
   service = bindings.get(FieldService);
 

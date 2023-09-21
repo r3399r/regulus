@@ -1,9 +1,10 @@
 import { LambdaContext, LambdaEvent } from 'src/model/Lambda';
 import { DbAccess } from './access/DbAccess';
 import { bindings } from './bindings';
-import { field } from './routes/field';
-import { question } from './routes/question';
-import { user } from './routes/user';
+import field from './routes/field';
+import question from './routes/question';
+import result from './routes/result';
+import user from './routes/user';
 import { errorOutput, successOutput } from './util/lambdaHelper';
 
 export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
@@ -23,6 +24,9 @@ export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
         break;
       case 'user':
         res = await user(event);
+        break;
+      case 'result':
+        res = await result(event);
         break;
     }
 
