@@ -44,6 +44,8 @@ const handleUser = async () => {
         event.pathParameters.id,
         JSON.parse(event.body) as PutUserRequest
       );
+    case 'GET':
+      return await service.getUserDetail(event.pathParameters.id);
   }
   throw new Error('unexpected httpMethod');
 };

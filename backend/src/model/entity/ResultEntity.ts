@@ -1,8 +1,17 @@
-import { BeforeInsert, Column, Entity, Generated } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Question, QuestionEntity } from './QuestionEntity';
 
 export type Result = {
   id: string;
   questionId: string;
+  question: Question;
   userId: string;
   score: number;
   createdAt: string | null;
@@ -16,6 +25,10 @@ export class ResultEntity implements Result {
 
   @Column({ name: 'question_id', type: 'text' })
   questionId!: string;
+
+  @ManyToOne(() => QuestionEntity)
+  @JoinColumn({ name: 'question_id' })
+  question!: Question;
 
   @Column({ name: 'user_id', type: 'uuid' })
   userId!: string;

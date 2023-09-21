@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { CategoryAccess } from 'src/access/CategoryAccess';
 import { ChapterAccess } from 'src/access/ChapterAccess';
-import { TagAccess } from 'src/access/TagAccess';
 import { GetFieldResponse } from 'src/model/api';
 
 /**
@@ -15,16 +14,12 @@ export class FieldService {
   @inject(ChapterAccess)
   private readonly chapterAccess!: ChapterAccess;
 
-  @inject(TagAccess)
-  private readonly tagAccess!: TagAccess;
-
   public async getAllFields(): Promise<GetFieldResponse> {
-    const [category, chapter, tag] = await Promise.all([
+    const [category, chapter] = await Promise.all([
       this.categoryAccess.find({ order: { createdAt: 'asc' } }),
       this.chapterAccess.find({ order: { createdAt: 'asc' } }),
-      this.tagAccess.find({ order: { name: 'asc' } }),
     ]);
 
-    return { category, chapter, tag };
+    return { category, chapter };
   }
 }
