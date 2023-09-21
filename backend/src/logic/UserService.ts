@@ -30,4 +30,8 @@ export class UserService {
 
     return await this.userAccess.save(user);
   }
+
+  public async getUsers() {
+    return await this.userAccess.find();
+  }
 }

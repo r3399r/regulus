@@ -26,6 +26,8 @@ const defaultUser = async () => {
       if (!event.body) throw new BadRequestError('body should not be empty');
 
       return await service.addUser(JSON.parse(event.body) as PostUserRequest);
+    case 'GET':
+      return await service.getUsers();
   }
 
   throw new Error('unexpected httpMethod');
