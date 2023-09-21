@@ -2,7 +2,7 @@ import { bindings } from 'src/bindings';
 import { FieldService } from 'src/logic/FieldService';
 import { LambdaEvent } from 'src/model/Lambda';
 
-const field = async (event: LambdaEvent) => {
+export const field = async (event: LambdaEvent) => {
   const service = bindings.get(FieldService);
 
   switch (event.httpMethod) {
@@ -12,5 +12,3 @@ const field = async (event: LambdaEvent) => {
 
   throw new Error('unexpected httpMethod');
 };
-
-export default field;

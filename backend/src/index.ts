@@ -1,8 +1,9 @@
 import { LambdaContext, LambdaEvent } from 'src/model/Lambda';
 import { DbAccess } from './access/DbAccess';
 import { bindings } from './bindings';
-import field from './routes/field';
-import question from './routes/question';
+import { field } from './routes/field';
+import { question, questionId } from './routes/question';
+import { user } from './routes/user';
 import { errorOutput, successOutput } from './util/lambdaHelper';
 
 export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
@@ -12,13 +13,18 @@ export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
   try {
     let res: any;
 
-    const category = event.resource.split('/')[2];
-    switch (category) {
-      case 'question':
+    switch (event.resource) {
+      case '/api/question':
         res = await question(event);
         break;
-      case 'field':
+      case '/api/question/{id}':
+        res = await questionId(event);
+        break;
+      case '/api/field':
         res = await field(event);
+        break;
+      case '/api/user':
+        res = await user(event);
         break;
     }
 

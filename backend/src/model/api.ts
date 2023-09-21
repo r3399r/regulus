@@ -48,3 +48,10 @@ export type GetFieldResponse = {
   chapter: Chapter[];
   tag: Tag[];
 };
+
+export type PostUserRequest = {
+  name: string;
+  email: string;
+  birthday: string;
+  memo: string;
+};
