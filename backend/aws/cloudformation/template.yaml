@@ -237,6 +237,7 @@ Resources:
                 "answer": {"type": "string"},
                 "answerFormat": {"type": "string"},
                 "youtube": {"type": "string"},
+                "hasSolution": {"type": "boolean"},
                 "category": {
                   "type": "array",
                   "items": {"type": "string"}
@@ -250,7 +251,7 @@ Resources:
                   "items": {"type": "string"}
                 },
               },
-              "required": ["content","answer","answerFormat"]
+              "required": ["content","answer","answerFormat","hasSolution"]
             },
             "putQuestion": {
               "type": "object",
@@ -259,6 +260,7 @@ Resources:
                 "answer": {"type": "string"},
                 "answerFormat": {"type": "string"},
                 "youtube": {"type": "string"},
+                "hasSolution": {"type": "boolean"},
                 "category": {
                   "type": "array",
                   "items": {"type": "string"}

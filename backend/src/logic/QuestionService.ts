@@ -110,7 +110,7 @@ export class QuestionService {
     return newQuestion;
   }
 
-  public async reviseQuestion(
+  public async updateQuestion(
     id: string,
     data: PutQuestionRequest
   ): Promise<PutQuestionResponse> {
@@ -124,7 +124,7 @@ export class QuestionService {
 
     const question = await this.questionAccess.findOneOrFail({ where: { id } });
 
-    // re-upload images
+    // delete & re-upload images
     if (question.hasImage) {
       const s3Objects = await this.awsUtil.listS3Objects(question.id);
       if (s3Objects.Contents)

@@ -5,14 +5,33 @@ import {
   PostQuestionRequest,
   PutQuestionRequest,
 } from 'src/model/api';
+import { BadRequestError } from 'src/model/error';
 import { LambdaEvent } from 'src/model/Lambda';
 
-export const question = async (event: LambdaEvent) => {
-  const service = bindings.get(QuestionService);
+let event: LambdaEvent;
+let service: QuestionService;
 
+export const question = async (lambdaEvent: LambdaEvent) => {
+  event = lambdaEvent;
+  service = bindings.get(QuestionService);
+
+  switch (event.resource) {
+    case '/api/question':
+      if (!event.body) throw new Error('missing body');
+
+      return await defaultQuestion();
+    case '/api/question/{id}':
+      if (!event.pathParameters) throw new Error('missing pathParameters');
+
+      return await handleQuestion();
+  }
+  throw new BadRequestError('unexpected resource');
+};
+
+const defaultQuestion = async () => {
   switch (event.httpMethod) {
     case 'POST':
-      if (!event.body) throw new Error('missing body');
+      if (!event.body) throw new BadRequestError('body should not be empty');
 
       return await service.addQuestion(
         JSON.parse(event.body) as PostQuestionRequest
@@ -22,23 +41,20 @@ export const question = async (event: LambdaEvent) => {
         event.queryStringParameters as GetQuestionParams | null
       );
   }
-
   throw new Error('unexpected httpMethod');
 };
 
-export const questionId = async (event: LambdaEvent) => {
-  const service = bindings.get(QuestionService);
+const handleQuestion = async () => {
   if (!event.pathParameters) throw new Error('missing pathParameters');
 
   switch (event.httpMethod) {
     case 'PUT':
       if (!event.body) throw new Error('missing body');
 
-      return await service.reviseQuestion(
+      return await service.updateQuestion(
         event.pathParameters.id,
         JSON.parse(event.body) as PutQuestionRequest
       );
   }
-
   throw new Error('unexpected httpMethod');
 };

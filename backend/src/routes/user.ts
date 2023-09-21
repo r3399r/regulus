@@ -1,11 +1,26 @@
 import { bindings } from 'src/bindings';
 import { UserService } from 'src/logic/UserService';
 import { PostUserRequest } from 'src/model/api';
+import { BadRequestError } from 'src/model/error';
 import { LambdaEvent } from 'src/model/Lambda';
 
-export const user = async (event: LambdaEvent) => {
-  const service = bindings.get(UserService);
+let event: LambdaEvent;
+let service: UserService;
 
+export const user = async (lambdaEvent: LambdaEvent) => {
+  event = lambdaEvent;
+  service = bindings.get(UserService);
+
+  switch (event.resource) {
+    case '/api/user':
+      if (!event.body) throw new Error('missing body');
+
+      return await defaultUser();
+  }
+  throw new BadRequestError('unexpected resource');
+};
+
+const defaultUser = async () => {
   switch (event.httpMethod) {
     case 'POST':
       if (!event.body) throw new Error('missing body');
