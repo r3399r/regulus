@@ -17,8 +17,6 @@ export const question = async (lambdaEvent: LambdaEvent) => {
 
   switch (event.resource) {
     case '/api/question':
-      if (!event.body) throw new Error('missing body');
-
       return await defaultQuestion();
     case '/api/question/{id}':
       if (!event.pathParameters) throw new Error('missing pathParameters');

@@ -223,6 +223,44 @@ Resources:
                   "type": "aws_proxy"
                 }
               }
+            },
+            "/api/user/{id}": {
+              "put": {
+                "produces": [
+                  "application/json"
+                ],
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/putUser"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-request-validator" : "Validate body, query string parameters, and headers",
+                "x-amazon-apigateway-integration": {
+                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "httpMethod": "POST",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              }
             }
           },
           "definitions": {
@@ -284,6 +322,15 @@ Resources:
                 "memo": {"type": "string"}
               },
               "required": ["name","email","birthday","memo"]
+            },
+            "putUser": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "email": {"type": "string"},
+                "birthday": {"type": "string"},
+                "memo": {"type": "string"}
+              }
             }
           },
           "x-amazon-apigateway-request-validators" : {

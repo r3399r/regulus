@@ -55,3 +55,10 @@ export type PostUserRequest = {
   birthday: string;
   memo: string;
 };
+
+export type PutUserRequest = {
+  name?: string;
+  email?: string;
+  birthday?: string;
+  memo?: string;
+};

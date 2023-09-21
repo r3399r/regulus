@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { UserService } from 'src/logic/UserService';
-import { PostUserRequest } from 'src/model/api';
+import { PostUserRequest, PutUserRequest } from 'src/model/api';
 import { BadRequestError } from 'src/model/error';
 import { LambdaEvent } from 'src/model/Lambda';
 
@@ -13,9 +13,9 @@ export const user = async (lambdaEvent: LambdaEvent) => {
 
   switch (event.resource) {
     case '/api/user':
-      if (!event.body) throw new Error('missing body');
-
       return await defaultUser();
+    case '/api/user/{id}':
+      return await handleUser();
   }
   throw new BadRequestError('unexpected resource');
 };
@@ -23,10 +23,25 @@ export const user = async (lambdaEvent: LambdaEvent) => {
 const defaultUser = async () => {
   switch (event.httpMethod) {
     case 'POST':
-      if (!event.body) throw new Error('missing body');
+      if (!event.body) throw new BadRequestError('body should not be empty');
 
       return await service.addUser(JSON.parse(event.body) as PostUserRequest);
   }
 
+  throw new Error('unexpected httpMethod');
+};
+
+const handleUser = async () => {
+  if (!event.pathParameters) throw new Error('missing pathParameters');
+
+  switch (event.httpMethod) {
+    case 'PUT':
+      if (!event.body) throw new Error('missing body');
+
+      return await service.updateUser(
+        event.pathParameters.id,
+        JSON.parse(event.body) as PutUserRequest
+      );
+  }
   throw new Error('unexpected httpMethod');
 };

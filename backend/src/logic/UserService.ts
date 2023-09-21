@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { UserAccess } from 'src/access/UserAccess';
-import { PostUserRequest } from 'src/model/api';
+import { PostUserRequest, PutUserRequest } from 'src/model/api';
 import { UserEntity } from 'src/model/entity/UserEntity';
 
 /**
@@ -17,6 +17,16 @@ export class UserService {
     user.email = data.email;
     user.birthday = data.birthday;
     user.memo = data.memo;
+
+    return await this.userAccess.save(user);
+  }
+
+  public async updateUser(id: string, data: PutUserRequest) {
+    const user = await this.userAccess.findOneOrFail({ where: { id } });
+    user.name = data.name ?? user.name;
+    user.email = data.email ?? user.email;
+    user.birthday = data.birthday ?? user.birthday;
+    user.memo = data.memo ?? user.memo;
 
     return await this.userAccess.save(user);
   }
