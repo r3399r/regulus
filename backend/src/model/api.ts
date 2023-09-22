@@ -72,5 +72,5 @@ export type PostResultRequest = {
 export type GetUserIdResponse = User & {
   categoryScore: { name: string; score: number }[];
   chapterScore: { name: string; score: number }[];
-  results: Result[];
+  results: Pick<Result, 'id' | 'questionId' | 'score' | 'createdAt'>[];
 };

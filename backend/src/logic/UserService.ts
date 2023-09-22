@@ -56,12 +56,11 @@ export class UserService {
       this.userAccess.findOneOrFail({ where: { id } }),
       this.resultAccess.find({
         where: { userId: id },
-        order: { createdAt: 'asc' },
+        order: { createdAt: 'desc' },
       }),
       this.categoryAccess.find(),
       this.chapterAccess.find(),
     ]);
-    console.log(JSON.stringify(user), JSON.stringify(results));
 
     const categoryScore = [];
     for (const c of categories) {
@@ -72,12 +71,13 @@ export class UserService {
         categoryScore.push({ name: c.name, score: 0 });
         continue;
       }
+      const n = filtered.length;
       const sum = filtered.reduce(
-        (acc, cur, i) => acc + cur.score * (i + 1),
+        (acc, cur, i) => acc + cur.score * (n - i),
         0
       );
-      const weight = ((1 + filtered.length) * filtered.length) / 2;
-      categoryScore.push({ name: c.name, score: (sum / weight) * 10 });
+      const weight = ((1 + n) * n) / 2;
+      categoryScore.push({ name: c.name, score: sum / weight });
     }
 
     const chapterScore = [];
@@ -94,9 +94,19 @@ export class UserService {
         0
       );
       const weight = ((1 + filtered.length) * filtered.length) / 2;
-      chapterScore.push({ name: c.name, score: (sum / weight) * 10 });
+      chapterScore.push({ name: c.name, score: sum / weight });
     }
 
-    return { ...user, categoryScore, chapterScore, results };
+    return {
+      ...user,
+      categoryScore,
+      chapterScore,
+      results: results.map((v) => ({
+        id: v.id,
+        questionId: v.questionId,
+        score: v.score,
+        createdAt: v.createdAt,
+      })),
+    };
   }
 }
