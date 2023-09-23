@@ -54,7 +54,7 @@ export class QuestionEntity implements Question {
   @Column({ type: 'timestamp', name: 'updated_at', default: null })
   updatedAt: string | null = null;
 
-  @ManyToMany(() => CategoryEntity, { cascade: true })
+  @ManyToMany(() => CategoryEntity)
   @JoinTable({
     name: 'question_category',
     joinColumn: { name: 'question_id', referencedColumnName: 'id' },
@@ -62,7 +62,7 @@ export class QuestionEntity implements Question {
   })
   categories!: Category[];
 
-  @ManyToMany(() => ChapterEntity, { cascade: true })
+  @ManyToMany(() => ChapterEntity)
   @JoinTable({
     name: 'question_chapter',
     joinColumn: { name: 'question_id', referencedColumnName: 'id' },
@@ -70,7 +70,7 @@ export class QuestionEntity implements Question {
   })
   chapters!: Chapter[];
 
-  @ManyToMany(() => TagEntity, { cascade: true })
+  @ManyToMany(() => TagEntity)
   @JoinTable({
     name: 'question_tag',
     joinColumn: { name: 'question_id', referencedColumnName: 'id' },

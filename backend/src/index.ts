@@ -3,6 +3,8 @@ import { DbAccess } from './access/DbAccess';
 import { bindings } from './bindings';
 import field from './routes/field';
 import question from './routes/question';
+import result from './routes/result';
+import user from './routes/user';
 import { errorOutput, successOutput } from './util/lambdaHelper';
 
 export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
@@ -12,13 +14,19 @@ export const handler = async (event: LambdaEvent, _context?: LambdaContext) => {
   try {
     let res: any;
 
-    const category = event.resource.split('/')[2];
-    switch (category) {
+    const resource = event.resource.split('/')[2];
+    switch (resource) {
       case 'question':
         res = await question(event);
         break;
       case 'field':
         res = await field(event);
+        break;
+      case 'user':
+        res = await user(event);
+        break;
+      case 'result':
+        res = await result(event);
         break;
     }
 

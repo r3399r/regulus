@@ -1,7 +1,8 @@
 import { Category } from './entity/CategoryEntity';
 import { Chapter } from './entity/ChapterEntity';
 import { Question } from './entity/QuestionEntity';
-import { Tag } from './entity/TagEntity';
+import { Result } from './entity/ResultEntity';
+import { User } from './entity/UserEntity';
 import { PaginationParams } from './Pagination';
 
 export type PostQuestionRequest = {
@@ -46,5 +47,32 @@ export type GetQuestionResponse = (Question & {
 export type GetFieldResponse = {
   category: Category[];
   chapter: Chapter[];
-  tag: Tag[];
+};
+
+export type PostUserRequest = {
+  name: string;
+  email: string;
+  birthday: string;
+  memo: string;
+};
+
+export type PutUserRequest = {
+  name?: string;
+  email?: string;
+  birthday?: string;
+  memo?: string;
+};
+
+export type PostResultRequest = {
+  questionId: string;
+  userId: string;
+  score: number;
+};
+
+export type GetUserResponse = User[];
+
+export type GetUserIdResponse = User & {
+  categoryScore: { name: string; score: number }[];
+  chapterScore: { name: string; score: number }[];
+  results: Pick<Result, 'id' | 'questionId' | 'score' | 'createdAt'>[];
 };
