@@ -132,7 +132,7 @@ const AdminQuestion = () => {
         <div className="text-xl font-bold">預覽</div>
         {preview && (
           <MathJax dynamic>
-            <div className="mt-4">{methods.watch('content')}</div>
+            <div className="mt-4 whitespace-pre-wrap">{methods.watch('content')}</div>
             <div className="flex flex-wrap">
               {image
                 ? image.map((v, i) => (

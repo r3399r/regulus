@@ -111,7 +111,7 @@ const QuestionPage = () => {
                     ))}
                   </div>
                 </div>
-                <div>{v.content}</div>
+                <div className="whitespace-pre-wrap">{v.content}</div>
                 <div className="flex flex-wrap">
                   {v.imageUrl?.map((o, i) => (
                     <div key={i}>
