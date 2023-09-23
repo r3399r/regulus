@@ -1,17 +1,16 @@
 import { Button, Card, Chip } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RootState } from 'src/redux/store';
-import { loadQuestionList } from 'src/service/QuestionService';
+import { GetQuestionResponse } from 'src/model/backend/api';
+import { getQuestionList } from 'src/service/QuestionService';
 
 const QuestionPage = () => {
   const navigate = useNavigate();
-  const { question } = useSelector((rootState: RootState) => rootState.api);
+  const [question, setQuestion] = useState<GetQuestionResponse>();
 
   useEffect(() => {
-    loadQuestionList();
+    getQuestionList().then((res) => setQuestion(res));
   }, []);
 
   return (

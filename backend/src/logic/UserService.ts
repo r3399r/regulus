@@ -5,6 +5,7 @@ import { ResultAccess } from 'src/access/ResultAccess';
 import { UserAccess } from 'src/access/UserAccess';
 import {
   GetUserIdResponse,
+  GetUserResponse,
   PostUserRequest,
   PutUserRequest,
 } from 'src/model/api';
@@ -47,7 +48,7 @@ export class UserService {
     return await this.userAccess.save(user);
   }
 
-  public async getUsers() {
+  public async getUsers(): Promise<GetUserResponse> {
     return await this.userAccess.find();
   }
 
