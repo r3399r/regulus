@@ -6,3 +6,7 @@
   size: auto;
   margin: 1rem;
 }
+
+body {
+  font-family: serif;
+}
