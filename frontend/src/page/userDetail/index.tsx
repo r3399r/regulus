@@ -1,4 +1,4 @@
-import { Card } from '@mui/material';
+import { Card, Chip } from '@mui/material';
 import {
   Chart as ChartJS,
   Filler,
@@ -105,15 +105,25 @@ const UserDetail = () => {
       </div>
       <Card className="flex flex-col gap-2 p-4">
         <div className="flex gap-2 font-bold">
-          <div className="w-1/3">ID</div>
-          <div className="w-1/3">分數</div>
-          <div className="w-1/3">日期</div>
+          <div className="w-1/4">ID</div>
+          <div className="w-1/4">章節</div>
+          <div className="w-1/4">分數</div>
+          <div className="w-1/4">日期</div>
         </div>
         {user.results.map((v) => (
-          <div className="flex gap-2" key={v.id}>
-            <div className="w-1/3">{v.questionId}</div>
-            <div className="w-1/3">{v.score * 10}</div>
-            <div className="w-1/3">{format(new Date(v.createdAt ?? ''), 'yyyy/MM/dd')}</div>
+          <div
+            className="flex cursor-pointer gap-2"
+            key={v.id}
+            onClick={() => navigate(`/question?id=${v.questionId}`)}
+          >
+            <div className="w-1/4">{v.questionId.toUpperCase()}</div>
+            <div className="flex w-1/4 gap-2">
+              {v.question.chapters.map((o) => (
+                <Chip key={o.id} label={o.name} size="small" color="primary" variant="outlined" />
+              ))}
+            </div>
+            <div className="w-1/4">{v.score * 10}</div>
+            <div className="w-1/4">{format(new Date(v.createdAt ?? ''), 'yyyy/MM/dd')}</div>
           </div>
         ))}
       </Card>

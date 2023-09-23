@@ -164,11 +164,13 @@ export class QuestionService {
   ): Promise<Pagination<GetQuestionResponse>> {
     if (params?.id) {
       const res = await this.questionAccess.findOne({
-        where: { id: params.id },
+        where: { id: params.id.toLowerCase() },
       });
       let imageUrl: string[] | null = null;
       if (res?.hasImage) {
-        const s3Objects = await this.awsUtil.listS3Objects(params.id);
+        const s3Objects = await this.awsUtil.listS3Objects(
+          params.id.toLowerCase()
+        );
         if (s3Objects.Contents && s3Objects.Contents.length > 0)
           imageUrl = s3Objects.Contents.map((v) =>
             v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''

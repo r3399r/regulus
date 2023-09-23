@@ -74,5 +74,5 @@ export type GetUserResponse = User[];
 export type GetUserIdResponse = User & {
   categoryScore: { name: string; score: number }[];
   chapterScore: { name: string; score: number }[];
-  results: Pick<Result, 'id' | 'questionId' | 'score' | 'createdAt'>[];
+  results: Result[];
 };
