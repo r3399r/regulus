@@ -30,6 +30,10 @@ const UserDetail = () => {
   return (
     <div className="m-4 flex flex-col gap-2">
       <div className="flex gap-4">
+        <div className="w-[60px]">ID</div>
+        <div>{user.id}</div>
+      </div>
+      <div className="flex gap-4">
         <div className="w-[60px]">姓名</div>
         <div>{user.name}</div>
       </div>

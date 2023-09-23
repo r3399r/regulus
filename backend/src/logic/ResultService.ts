@@ -13,7 +13,7 @@ export class ResultService {
 
   public async addResult(data: PostResultRequest) {
     const result = new ResultEntity();
-    result.questionId = data.questionId;
+    result.questionId = data.questionId.toLowerCase();
     result.userId = data.userId;
     result.score = data.score;
 

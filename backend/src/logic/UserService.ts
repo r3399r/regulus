@@ -1,3 +1,4 @@
+import { differenceInCalendarDays } from 'date-fns';
 import { inject, injectable } from 'inversify';
 import { CategoryAccess } from 'src/access/CategoryAccess';
 import { ChapterAccess } from 'src/access/ChapterAccess';
@@ -10,6 +11,7 @@ import {
   PutUserRequest,
 } from 'src/model/api';
 import { UserEntity } from 'src/model/entity/UserEntity';
+import { bn } from 'src/util/bignumber';
 
 /**
  * Service class for User
@@ -59,8 +61,8 @@ export class UserService {
         where: { userId: id },
         order: { createdAt: 'desc' },
       }),
-      this.categoryAccess.find(),
-      this.chapterAccess.find(),
+      this.categoryAccess.find({ order: { createdAt: 'asc' } }),
+      this.chapterAccess.find({ order: { createdAt: 'asc' } }),
     ]);
 
     const categoryScore = [];
@@ -72,13 +74,21 @@ export class UserService {
         categoryScore.push({ name: c.name, score: 0 });
         continue;
       }
-      const n = filtered.length;
-      const sum = filtered.reduce(
-        (acc, cur, i) => acc + cur.score * (n - i),
-        0
+      const r = 0.9;
+      const [sum, weight] = filtered.reduce(
+        (acc, cur) => {
+          const diff = differenceInCalendarDays(
+            new Date(),
+            new Date(cur.createdAt ?? '')
+          );
+          const sum = bn(r).pow(diff).times(cur.score).plus(acc[0]);
+          const weight = bn(r).pow(diff).plus(acc[1]);
+
+          return [sum, weight];
+        },
+        [bn(0), bn(0)]
       );
-      const weight = ((1 + n) * n) / 2;
-      categoryScore.push({ name: c.name, score: sum / weight });
+      categoryScore.push({ name: c.name, score: sum.div(weight).toNumber() });
     }
 
     const chapterScore = [];
