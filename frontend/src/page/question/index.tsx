@@ -8,25 +8,37 @@ import { GetQuestionResponse } from 'src/model/backend/api';
 import { openSnackbar } from 'src/redux/uiSlice';
 import { getQuestionList } from 'src/service/QuestionService';
 
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 50;
 
 const QuestionPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id } = useQuery<{ id?: string }>();
+  const { id, category, chapter, tag } = useQuery<{
+    id?: string;
+    category?: string;
+    chapter?: string;
+    tag?: string;
+  }>();
   const [question, setQuestion] = useState<GetQuestionResponse>();
   const [page, setPage] = useState<number>(1);
   const [offset, setOffset] = useState<number>(0);
   const [count, setCount] = useState<number>();
 
   useEffect(() => {
-    getQuestionList({ id, limit: String(DEFAULT_LIMIT), offset: String(offset) })
+    getQuestionList({
+      id,
+      category,
+      chapter,
+      tag,
+      limit: String(DEFAULT_LIMIT),
+      offset: String(offset),
+    })
       .then((res) => {
         setQuestion(res.data);
         setCount(res.count);
       })
       .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
-  }, [id, offset]);
+  }, [id, category, chapter, tag, offset]);
 
   const handlePaginationChange = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
