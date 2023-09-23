@@ -19,60 +19,61 @@ const QuestionPage = () => {
       <Button variant="contained" onClick={() => navigate('./print', { state: { question } })}>
         列印設定
       </Button>
-      <MathJax dynamic>
-        <div className="flex flex-wrap gap-4">
-          {question?.map((v) => (
-            <Card key={v.id} className="h-fit w-[calc(50%-8px)] p-4">
-              <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
-              <div className="flex gap-2">
+      {question && (
+        <MathJax>
+          <div className="flex flex-wrap gap-4">
+            {question.map((v) => (
+              <Card key={v.id} className="flex h-fit w-[calc(50%-8px)] flex-col gap-2 p-4">
+                <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
                 <div className="flex gap-2">
-                  {v.categories.map((o) => (
-                    <Chip
-                      key={o.id}
-                      label={o.name}
-                      size="small"
-                      color="warning"
-                      variant="outlined"
-                    />
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  {v.chapters.map((o) => (
-                    <Chip
-                      key={o.id}
-                      label={o.name}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  {v.tags.map((o) => (
-                    <Chip
-                      key={o.id}
-                      label={o.name}
-                      size="small"
-                      color="success"
-                      variant="outlined"
-                    />
-                  ))}
-                </div>
-              </div>
-              <div>{v.content}</div>
-              <div className="flex flex-wrap">
-                {v.imageUrl?.map((o, i) => (
-                  <div key={i}>
-                    <img src={o} />
+                  <div className="flex gap-2">
+                    {v.categories.map((o) => (
+                      <Chip
+                        key={o.id}
+                        label={o.name}
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div>Ans: {v.answerFormat}</div>
-              <div className="mt-2">Ans: {v.answer}</div>
-            </Card>
-          ))}
-        </div>
-      </MathJax>
+                  <div className="flex gap-2">
+                    {v.chapters.map((o) => (
+                      <Chip
+                        key={o.id}
+                        label={o.name}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    {v.tags.map((o) => (
+                      <Chip
+                        key={o.id}
+                        label={o.name}
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>{v.content}</div>
+                <div className="flex flex-wrap">
+                  {v.imageUrl?.map((o, i) => (
+                    <div key={i}>
+                      <img src={o} />
+                    </div>
+                  ))}
+                </div>
+                <div>Ans: {v.answer}</div>
+              </Card>
+            ))}
+          </div>
+        </MathJax>
+      )}
     </div>
   );
 };

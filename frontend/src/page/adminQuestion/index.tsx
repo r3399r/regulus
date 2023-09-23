@@ -28,6 +28,7 @@ const AdminQuestion = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<File[]>();
   const [imageUrl, setImageUrl] = useState<string[] | null>(null);
+  const [preview, setPreview] = useState<boolean>(true);
 
   useEffect(() => {
     getFields().then((res) => {
@@ -51,6 +52,11 @@ const AdminQuestion = () => {
       setImageUrl(res[0].imageUrl);
     });
   }, [id]);
+
+  useEffect(() => {
+    setPreview(false);
+    setTimeout(() => setPreview(true), 10);
+  }, [methods.watch('content'), methods.watch('answer'), methods.watch('answerFormat')]);
 
   const onSubmit = (data: QuestionForm) => {
     if (id === undefined)
@@ -103,7 +109,7 @@ const AdminQuestion = () => {
               </MenuItem>
             ))}
           </FormMultiSelect>
-          <FormMultiSelect name="chapter" label="章節" required>
+          <FormMultiSelect name="chapter" label="章節">
             {chapter.map((v) => (
               <MenuItem key={v.id} value={v.name}>
                 {v.name}
@@ -111,7 +117,7 @@ const AdminQuestion = () => {
             ))}
           </FormMultiSelect>
         </div>
-        <FormInput name="tag" label="標籤" helperText="以小逗號分隔" required />
+        <FormInput name="tag" label="標籤" helperText="以小逗號分隔" />
         <FormInput name="youtube" label="Youtube 影片 ID" />
         <div>
           <FormCheckbox name="hasSolution" label="有詳解" />
@@ -124,30 +130,32 @@ const AdminQuestion = () => {
       </Form>
       <div className="my-4 mr-4 w-1/2">
         <div className="text-xl font-bold">預覽</div>
-        <MathJax dynamic>
-          <div className="mt-4">{methods.watch('content')}</div>
-          <div className="flex flex-wrap">
-            {image
-              ? image.map((v, i) => (
-                  <div key={i}>
-                    <img src={URL.createObjectURL(v)} />
-                  </div>
-                ))
-              : imageUrl?.map((v, i) => (
-                  <div key={i}>
-                    <img src={v} />
-                  </div>
-                ))}
-          </div>
-          <div className="flex gap-2">
-            <div>Ans:</div>
-            <div>{methods.watch('answerFormat')}</div>
-          </div>
-          <div className="flex gap-2">
-            <div>Ans:</div>
-            <div>{methods.watch('answer')}</div>
-          </div>
-        </MathJax>
+        {preview && (
+          <MathJax dynamic>
+            <div className="mt-4">{methods.watch('content')}</div>
+            <div className="flex flex-wrap">
+              {image
+                ? image.map((v, i) => (
+                    <div key={i}>
+                      <img src={URL.createObjectURL(v)} />
+                    </div>
+                  ))
+                : imageUrl?.map((v, i) => (
+                    <div key={i}>
+                      <img src={v} />
+                    </div>
+                  ))}
+            </div>
+            <div className="flex gap-2">
+              <div>Ans:</div>
+              <div>{methods.watch('answerFormat')}</div>
+            </div>
+            <div className="flex gap-2">
+              <div>Ans:</div>
+              <div>{methods.watch('answer')}</div>
+            </div>
+          </MathJax>
+        )}
       </div>
       <input
         type="file"
