@@ -1,16 +1,21 @@
 import { Card } from '@mui/material';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { User } from 'src/model/backend/entity/UserEntity';
+import { openSnackbar } from 'src/redux/uiSlice';
 import { getAllUser } from 'src/service/UserService';
 
 const UserPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [userList, setUserList] = useState<User[]>();
 
   useEffect(() => {
-    getAllUser().then((res) => setUserList(res));
+    getAllUser()
+      .then((res) => setUserList(res))
+      .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
   }, []);
 
   return (

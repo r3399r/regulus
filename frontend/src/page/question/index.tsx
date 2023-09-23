@@ -1,16 +1,21 @@
 import { Button, Card, Chip } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { GetQuestionResponse } from 'src/model/backend/api';
+import { openSnackbar } from 'src/redux/uiSlice';
 import { getQuestionList } from 'src/service/QuestionService';
 
 const QuestionPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [question, setQuestion] = useState<GetQuestionResponse>();
 
   useEffect(() => {
-    getQuestionList().then((res) => setQuestion(res));
+    getQuestionList()
+      .then((res) => setQuestion(res))
+      .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
   }, []);
 
   return (

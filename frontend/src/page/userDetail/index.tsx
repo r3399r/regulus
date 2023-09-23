@@ -10,19 +10,28 @@ import {
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Radar } from 'react-chartjs-2';
-import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { GetUserIdResponse } from 'src/model/backend/api';
+import { openSnackbar } from 'src/redux/uiSlice';
 import { getUserById } from 'src/service/UserService';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip);
 
 const UserDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [user, setUser] = useState<GetUserIdResponse>();
 
   useEffect(() => {
     if (id === undefined) return;
-    getUserById(id).then((res) => setUser(res));
+    getUserById(id)
+      .then((res) => setUser(res))
+      .catch(() => {
+        dispatch(openSnackbar({ message: 'invalid user id', severity: 'error' }));
+        navigate('question');
+      });
   }, [id]);
 
   if (!user) return <></>;
