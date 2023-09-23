@@ -1,5 +1,6 @@
 import fieldEndpoint from 'src/api/fieldEndpoint';
 import questionEndpoint from 'src/api/questionEndpoint';
+import { GetQuestionParams } from 'src/model/backend/api';
 import { QuestionForm } from 'src/model/Form';
 import { dispatch } from 'src/redux/store';
 import { finishWaiting, startWaiting } from 'src/redux/uiSlice';
@@ -27,12 +28,12 @@ export const getQuestionById = async (id: string) => {
   }
 };
 
-export const getQuestionList = async () => {
+export const getQuestionList = async (params: GetQuestionParams) => {
   try {
     dispatch(startWaiting());
-    const res = await questionEndpoint.getQuestion();
+    const res = await questionEndpoint.getQuestion(params);
 
-    return res.data;
+    return { data: res.data, count: Number(res.headers['x-pagination-count']) };
   } finally {
     dispatch(finishWaiting());
   }

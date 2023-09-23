@@ -65,16 +65,14 @@ export class UserService {
       this.chapterAccess.find({ order: { createdAt: 'asc' } }),
     ]);
 
+    const r = 0.95;
+
     const categoryScore = [];
     for (const c of categories) {
       const filtered = results.filter((v) =>
         v.question.categories.map((o) => o.id).includes(c.id)
       );
-      if (filtered.length === 0) {
-        categoryScore.push({ name: c.name, score: 0 });
-        continue;
-      }
-      const r = 0.9;
+      if (filtered.length === 0) continue;
       const [sum, weight] = filtered.reduce(
         (acc, cur) => {
           const diff = differenceInCalendarDays(
@@ -96,28 +94,28 @@ export class UserService {
       const filtered = results.filter((v) =>
         v.question.chapters.map((o) => o.id).includes(c.id)
       );
-      if (filtered.length === 0) {
-        chapterScore.push({ name: c.name, score: 0 });
-        continue;
-      }
-      const sum = filtered.reduce(
-        (acc, cur, i) => acc + cur.score * (i + 1),
-        0
+      if (filtered.length === 0) continue;
+      const [sum, weight] = filtered.reduce(
+        (acc, cur) => {
+          const diff = differenceInCalendarDays(
+            new Date(),
+            new Date(cur.createdAt ?? '')
+          );
+          const sum = bn(r).pow(diff).times(cur.score).plus(acc[0]);
+          const weight = bn(r).pow(diff).plus(acc[1]);
+
+          return [sum, weight];
+        },
+        [bn(0), bn(0)]
       );
-      const weight = ((1 + filtered.length) * filtered.length) / 2;
-      chapterScore.push({ name: c.name, score: sum / weight });
+      chapterScore.push({ name: c.name, score: sum.div(weight).toNumber() });
     }
 
     return {
       ...user,
       categoryScore,
       chapterScore,
-      results: results.map((v) => ({
-        id: v.id,
-        questionId: v.questionId,
-        score: v.score,
-        createdAt: v.createdAt,
-      })),
+      results,
     };
   }
 }
