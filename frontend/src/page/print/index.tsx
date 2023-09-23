@@ -67,7 +67,7 @@ const Print = () => {
                   style={{ width: `${width === '' ? 8 : width}cm` }}
                 >
                   {showId && <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>}
-                  <div>{v.content}</div>
+                  <div className="whitespace-pre-wrap">{v.content}</div>
                   <div className="flex flex-wrap">
                     {v.imageUrl?.map((o, i) => (
                       <div key={i}>
