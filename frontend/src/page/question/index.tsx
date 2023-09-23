@@ -1,5 +1,6 @@
 import { Button, Card, Chip, Pagination } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
+import classNames from 'classnames';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +24,7 @@ const QuestionPage = () => {
   const [page, setPage] = useState<number>(1);
   const [offset, setOffset] = useState<number>(0);
   const [count, setCount] = useState<number>();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     getQuestionList({
@@ -49,58 +51,76 @@ const QuestionPage = () => {
 
   return (
     <div className="p-2">
-      <Button variant="contained" onClick={() => navigate('./print', { state: { question } })}>
+      <Button
+        variant="contained"
+        onClick={() =>
+          navigate('./print', { state: { question: question.filter((v) => selected.has(v.id)) } })
+        }
+        disabled={selected.size === 0}
+      >
         列印設定
       </Button>
       <MathJax>
-        <div className="flex flex-wrap gap-4">
+        <div className="mt-2 flex flex-wrap gap-4">
           {question.map((v) => (
-            <Card key={v.id} className="flex h-fit w-full flex-col gap-2 p-4 sm:w-[calc(50%-8px)]">
-              <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
-              <div className="flex gap-2">
+            <Card key={v.id} className="h-fit w-full sm:w-[calc(50%-8px)]">
+              <div
+                className={classNames('flex flex-col gap-2 p-4 cursor-pointer', {
+                  '!bg-blue-100/30': selected.has(v.id),
+                })}
+                onClick={() => {
+                  const tempSelected = new Set(selected);
+                  if (tempSelected.has(v.id)) tempSelected.delete(v.id);
+                  else tempSelected.add(v.id);
+                  setSelected(tempSelected);
+                }}
+              >
+                <div className="text-sm text-gray-500">ID: {v.id.toUpperCase()}</div>
                 <div className="flex gap-2">
-                  {v.categories.map((o) => (
-                    <Chip
-                      key={o.id}
-                      label={o.name}
-                      size="small"
-                      color="warning"
-                      variant="outlined"
-                    />
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  {v.chapters.map((o) => (
-                    <Chip
-                      key={o.id}
-                      label={o.name}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  {v.tags.map((o) => (
-                    <Chip
-                      key={o.id}
-                      label={o.name}
-                      size="small"
-                      color="success"
-                      variant="outlined"
-                    />
-                  ))}
-                </div>
-              </div>
-              <div>{v.content}</div>
-              <div className="flex flex-wrap">
-                {v.imageUrl?.map((o, i) => (
-                  <div key={i}>
-                    <img src={o} />
+                  <div className="flex gap-2">
+                    {v.categories.map((o) => (
+                      <Chip
+                        key={o.id}
+                        label={o.name}
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                      />
+                    ))}
                   </div>
-                ))}
+                  <div className="flex gap-2">
+                    {v.chapters.map((o) => (
+                      <Chip
+                        key={o.id}
+                        label={o.name}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    {v.tags.map((o) => (
+                      <Chip
+                        key={o.id}
+                        label={o.name}
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>{v.content}</div>
+                <div className="flex flex-wrap">
+                  {v.imageUrl?.map((o, i) => (
+                    <div key={i}>
+                      <img src={o} />
+                    </div>
+                  ))}
+                </div>
+                <div>Ans: {v.answer}</div>
               </div>
-              <div>Ans: {v.answer}</div>
             </Card>
           ))}
         </div>
