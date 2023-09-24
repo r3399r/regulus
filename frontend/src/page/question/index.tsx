@@ -27,6 +27,7 @@ const QuestionPage = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    setQuestion(undefined)
     getQuestionList({
       id,
       category,
