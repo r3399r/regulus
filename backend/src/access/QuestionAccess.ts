@@ -54,13 +54,13 @@ export class QuestionAccess {
     const qr = await this.database.getQueryRunner();
     const queryBuilder = qr.manager
       .createQueryBuilder(QuestionEntity.name, 'q')
-      .distinctOn(['q.id'])
-      .innerJoinAndSelect('question_category', 'qc', 'qc.question_id = q.id')
-      .innerJoinAndSelect('category', 'c', 'qc.category_id = c.id')
-      .innerJoinAndSelect('question_chapter', 'qc2', 'qc2.question_id = q.id')
-      .innerJoinAndSelect('chapter', 'c2', 'qc2.chapter_id = c2.id')
-      .innerJoinAndSelect('question_tag', 'qt', 'qt.question_id = q.id')
-      .innerJoinAndSelect('tag', 't', 'qt.tag_id = t.id');
+      .select('q.id')
+      .innerJoin('question_category', 'qc', 'qc.question_id = q.id')
+      .innerJoin('category', 'c', 'qc.category_id = c.id')
+      .innerJoin('question_chapter', 'qc2', 'qc2.question_id = q.id')
+      .innerJoin('chapter', 'c2', 'qc2.chapter_id = c2.id')
+      .innerJoin('question_tag', 'qt', 'qt.question_id = q.id')
+      .innerJoin('tag', 't', 'qt.tag_id = t.id');
 
     if (options.category) {
       queryBuilder.where('c.name IN (:...category)', {
@@ -85,6 +85,33 @@ export class QuestionAccess {
     } else if (options.tag)
       queryBuilder.where('t.name IN (:...tag)', {
         tag: options.tag,
+      });
+
+    queryBuilder.groupBy('q.id');
+
+    if (options.category) {
+      queryBuilder.having('count(distinct c.id) = :distinctCategory', {
+        distinctCategory: options.category.length,
+      });
+      if (options.chapter)
+        queryBuilder.andHaving('count(distinct c2.id) = :distinctChapter', {
+          distinctChapter: options.chapter.length,
+        });
+      if (options.tag)
+        queryBuilder.andHaving('count(distinct t.id) = :distinctTag', {
+          distinctTag: options.tag.length,
+        });
+    } else if (options.chapter) {
+      queryBuilder.having('count(distinct c2.id) = :distinctChapter', {
+        distinctChapter: options.chapter.length,
+      });
+      if (options.tag)
+        queryBuilder.andHaving('count(distinct t.id) = :distinctTag', {
+          distinctTag: options.tag.length,
+        });
+    } else if (options.tag)
+      queryBuilder.having('count(distinct t.id) = :distinctTag', {
+        distinctTag: options.tag.length,
       });
 
     const res = await queryBuilder.getRawMany();
