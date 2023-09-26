@@ -54,15 +54,18 @@ const QuestionPage = () => {
 
   return (
     <div className="p-2">
-      <Button
-        variant="contained"
-        onClick={() =>
-          navigate('./print', { state: { question: question.filter((v) => selected.has(v.id)) } })
-        }
-        disabled={selected.size === 0}
-      >
-        列印設定
-      </Button>
+      <div className="flex items-center gap-2">
+        <div>搜尋結果: {count} 題</div>
+        <Button
+          variant="contained"
+          onClick={() =>
+            navigate('./print', { state: { question: question.filter((v) => selected.has(v.id)) } })
+          }
+          disabled={selected.size === 0}
+        >
+          列印設定
+        </Button>
+      </div>
       <MathJax>
         <div className="mt-2 flex flex-wrap gap-4">
           {question.map((v) => (
