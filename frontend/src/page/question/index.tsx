@@ -1,3 +1,5 @@
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 import { Button, Card, Chip, Pagination } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import classNames from 'classnames';
@@ -27,7 +29,7 @@ const QuestionPage = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setQuestion(undefined)
+    setQuestion(undefined);
     getQuestionList({
       id,
       category,
@@ -121,6 +123,25 @@ const QuestionPage = () => {
                   ))}
                 </div>
                 <div>Ans: {v.answer}</div>
+                <div className="flex gap-2">
+                  <HistoryEduIcon
+                    color={v.hasSolution ? 'inherit' : 'disabled'}
+                    onClick={() => {
+                      if (v.youtube === null) return;
+                      window.open(
+                        `https://blog.celestialstudio.net/posts/solution/${v.id}`,
+                        '_blank',
+                      );
+                    }}
+                  />
+                  <YouTubeIcon
+                    color={v.youtube ? 'inherit' : 'disabled'}
+                    onClick={() => {
+                      if (v.youtube === null) return;
+                      window.open(`https://www.youtube.com/watch?v=${v.youtube}`, '_blank');
+                    }}
+                  />
+                </div>
               </div>
             </Card>
           ))}
