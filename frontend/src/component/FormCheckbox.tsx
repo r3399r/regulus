@@ -21,7 +21,10 @@ const FormCheckbox = ({ name, label, required = false, defaultChecked, ...props 
       defaultValue={defaultChecked ?? false}
       rules={{ required }}
       render={({ field }) => (
-        <FormControlLabel control={<Checkbox {...props} />} label={label} {...field} />
+        <FormControlLabel
+          control={<Checkbox {...props} checked={field.value} {...field} />}
+          label={label}
+        />
       )}
     />
   );
