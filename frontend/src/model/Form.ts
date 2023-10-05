@@ -7,4 +7,6 @@ export type QuestionForm = {
   tag: string;
   youtube: string;
   hasSolution: boolean;
+  defaultScore: string;
+  defaultCount: string;
 };

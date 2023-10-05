@@ -117,6 +117,7 @@ const QuestionPage = () => {
                     ))}
                   </div>
                 </div>
+                <div>{`平均得分: ${v.average ? v.average + '/10' : '-'}`}</div>
                 <div className="whitespace-pre-wrap">{v.content}</div>
                 <div className="flex flex-wrap">
                   {v.imageUrl?.map((o, i) => (

@@ -21,6 +21,8 @@ export type Question = {
   categories: Category[];
   chapters: Chapter[];
   tags: Tag[];
+  accumulativeScore: number | null;
+  accumulativeCount: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 };
@@ -47,6 +49,12 @@ export class QuestionEntity implements Question {
 
   @Column({ type: 'boolean', name: 'has_image' })
   hasImage = false;
+
+  @Column({ type: 'float', name: 'accumulative_score' })
+  accumulativeScore: number | null = null;
+
+  @Column({ type: 'int', name: 'accumulative_count' })
+  accumulativeCount: string | null = null;
 
   @Column({ type: 'timestamp', name: 'created_at', default: null })
   createdAt!: string;

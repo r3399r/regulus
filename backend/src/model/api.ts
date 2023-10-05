@@ -15,6 +15,8 @@ export type PostQuestionRequest = {
   youtube?: string;
   hasSolution: boolean;
   image?: string[];
+  defaultScore?: number;
+  defaultCount?: number;
 };
 
 export type PostQuestionResponse = Question;
@@ -42,6 +44,7 @@ export type GetQuestionParams = PaginationParams & {
 
 export type GetQuestionResponse = (Question & {
   imageUrl: string[] | null;
+  average: string | null;
 })[];
 
 export type GetFieldResponse = {
