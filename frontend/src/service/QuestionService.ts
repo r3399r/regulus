@@ -52,6 +52,8 @@ export const addNewQuestion = async (formData: QuestionForm, image?: File[]) => 
       youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
       hasSolution: formData.hasSolution,
       image: image ? await Promise.all(image.map((v) => file2Base64(v))) : undefined,
+      defaultScore: formData.defaultScore === '' ? undefined : Number(formData.defaultScore),
+      defaultCount: formData.defaultCount === '' ? undefined : Number(formData.defaultCount),
     });
   } finally {
     dispatch(finishWaiting());

@@ -18,6 +18,7 @@ import { TagEntity } from 'src/model/entity/TagEntity';
 import { NotFoundError } from 'src/model/error';
 import { Pagination } from 'src/model/Pagination';
 import { AwsUtil } from 'src/util/AwsUtil';
+import { bn } from 'src/util/bignumber';
 
 /**
  * Service class for Question
@@ -96,6 +97,8 @@ export class QuestionService {
     question.youtube = data.youtube ?? null;
     question.hasSolution = data.hasSolution;
     question.hasImage = data.image === undefined ? false : true;
+    question.accumulativeScore = data.defaultScore ?? null;
+    question.accumulativeCount = data.defaultCount?.toString() ?? null;
 
     const newQuestion = await this.questionAccess.save(question);
 
@@ -176,9 +179,16 @@ export class QuestionService {
             v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
           ).filter((v) => v !== '');
       }
+      const average =
+        res && res.accumulativeCount && res.accumulativeScore
+          ? bn(res.accumulativeScore)
+              .div(res.accumulativeCount)
+              .times(10)
+              .toFixed(2)
+          : null;
 
       return {
-        data: res ? [{ ...res, imageUrl }] : [],
+        data: res ? [{ ...res, imageUrl, average }] : [],
         paginate: { limit: 0, offset: 0, count: res ? 1 : 0 },
       };
     }
@@ -211,8 +221,15 @@ export class QuestionService {
               v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
             ).filter((v) => v !== '');
         }
+        const average =
+          q.accumulativeCount && q.accumulativeScore
+            ? bn(q.accumulativeScore)
+                .div(q.accumulativeCount)
+                .times(10)
+                .toFixed(2)
+            : null;
 
-        return { ...q, imageUrl };
+        return { ...q, imageUrl, average };
       })
     );
 

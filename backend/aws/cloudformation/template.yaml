@@ -376,6 +376,8 @@ Resources:
                   "type": "array",
                   "items": {"type": "string"}
                 },
+                "defaultScore": {"type": "number"},
+                "defaultCount": {"type": "integer"}
               },
               "required": ["content","answer","answerFormat","hasSolution"]
             },

@@ -122,6 +122,12 @@ const AdminQuestion = () => {
         <div>
           <FormCheckbox name="hasSolution" label="有詳解" />
         </div>
+        {id === undefined && (
+          <div className="flex gap-4">
+            <FormInput className="flex-1" name="defaultScore" label="預設總分" type="number" />
+            <FormInput className="flex-1" name="defaultCount" label="預設總人數" type="number" />
+          </div>
+        )}
         <div>
           <Button type="submit" variant="contained">
             {id === undefined ? '新增' : '編輯'}
