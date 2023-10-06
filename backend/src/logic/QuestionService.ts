@@ -180,7 +180,7 @@ export class QuestionService {
           ).filter((v) => v !== '');
       }
       const average =
-        res && res.accumulativeCount && res.accumulativeScore
+        res && res.accumulativeCount !== null && res.accumulativeScore !== null
           ? bn(res.accumulativeScore)
               .div(res.accumulativeCount)
               .times(10)
@@ -222,7 +222,7 @@ export class QuestionService {
             ).filter((v) => v !== '');
         }
         const average =
-          q.accumulativeCount && q.accumulativeScore
+          q.accumulativeCount !== null && q.accumulativeScore !== null
             ? bn(q.accumulativeScore)
                 .div(q.accumulativeCount)
                 .times(10)
