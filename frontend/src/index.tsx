@@ -22,6 +22,8 @@ root.render(
           TeX: {
             Macros: {
               degree: ['^\\circ', 0],
+              vector: ['\\overset{\\small\\rightharpoonup}{#1}', 1],
+              xvector: ['\\overset{\\LARGE\\rightharpoonup}{#1}', 1],
             },
           },
         }}
