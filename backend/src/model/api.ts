@@ -44,7 +44,7 @@ export type GetQuestionParams = PaginationParams & {
 
 export type GetQuestionResponse = (Question & {
   imageUrl: string[] | null;
-  average: string | null;
+  average: number | null;
 })[];
 
 export type GetFieldResponse = {

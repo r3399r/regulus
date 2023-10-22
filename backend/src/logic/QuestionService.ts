@@ -183,8 +183,9 @@ export class QuestionService {
         res && res.accumulativeCount !== null && res.accumulativeScore !== null
           ? bn(res.accumulativeScore)
               .div(res.accumulativeCount)
-              .times(10)
-              .toFixed(2)
+              .times(5)
+              .dp(1)
+              .toNumber()
           : null;
 
       return {
@@ -225,8 +226,9 @@ export class QuestionService {
           q.accumulativeCount !== null && q.accumulativeScore !== null
             ? bn(q.accumulativeScore)
                 .div(q.accumulativeCount)
-                .times(10)
-                .toFixed(2)
+                .times(5)
+                .dp(1)
+                .toNumber()
             : null;
 
         return { ...q, imageUrl, average };

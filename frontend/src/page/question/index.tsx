@@ -1,6 +1,6 @@
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-import { Button, Card, Chip, Pagination } from '@mui/material';
+import { Button, Card, Chip, Pagination, Rating } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import classNames from 'classnames';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -117,7 +117,14 @@ const QuestionPage = () => {
                     ))}
                   </div>
                 </div>
-                <div>{`平均得分: ${v.average ? v.average + '/10' : '-'}`}</div>
+                <div className="flex items-center gap-2">
+                  <div>難易度:</div>
+                  {v.average ? (
+                    <Rating value={6 - v.average} precision={0.1} readOnly size="small" />
+                  ) : (
+                    <div>無資料</div>
+                  )}
+                </div>
                 <div className="whitespace-pre-wrap">{v.content}</div>
                 <div className="flex flex-wrap">
                   {v.imageUrl?.map((o, i) => (
