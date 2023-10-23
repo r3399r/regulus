@@ -72,8 +72,8 @@ const QuestionPage = () => {
 
   return (
     <div>
-      <div className="sticky top-0 z-10">
-        <div className="mx-4 flex max-w-[1600px] flex-wrap justify-between gap-x-2 gap-y-4 bg-grey-50 py-4 sm:mx-10 lg:mx-auto">
+      <div className="bg-grey-50 sm:sticky sm:top-0 sm:z-10">
+        <div className="mx-4 flex max-w-[1600px] flex-wrap justify-between gap-x-2 gap-y-4 py-4 sm:mx-10 lg:mx-auto">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex">
@@ -123,23 +123,23 @@ const QuestionPage = () => {
             </button>
           </div>
         </div>
-        <div className="mx-4 flex h-12 max-w-[1600px] flex-wrap items-center gap-2 bg-grey-100 sm:mx-10 lg:mx-auto">
-          {(query.category || query.chapter || query.tag) && (
-            <div
-              className="cursor-pointer rounded-md bg-grey-200 px-2 py-[2px] text-xs leading-[1.5]"
-              onClick={() => navigate({ search: createSearchParams({}).toString() })}
-            >
-              清除
-            </div>
-          )}
-          {[
-            ...(query.category?.split(',') ?? []),
-            ...(query.chapter?.split(',') ?? []),
-            ...(query.tag?.split(',') ?? []),
-          ].map((v, i) => (
-            <div key={i}>{v}</div>
-          ))}
-        </div>
+      </div>
+      <div className="mx-4 flex h-12 max-w-[1600px] flex-wrap items-center gap-2 sm:mx-10 lg:mx-auto">
+        {(query.category || query.chapter || query.tag) && (
+          <div
+            className="cursor-pointer rounded-md bg-grey-200 px-2 py-[2px] text-xs leading-[1.5]"
+            onClick={() => navigate({ search: createSearchParams({}).toString() })}
+          >
+            清除
+          </div>
+        )}
+        {[
+          ...(query.category?.split(',') ?? []),
+          ...(query.chapter?.split(',') ?? []),
+          ...(query.tag?.split(',') ?? []),
+        ].map((v, i) => (
+          <div key={i}>{v}</div>
+        ))}
       </div>
       <MathJax>
         <div className="mx-4 flex max-w-[1600px] flex-wrap gap-6 sm:mx-10 lg:mx-auto">
