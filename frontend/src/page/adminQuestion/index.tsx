@@ -59,9 +59,9 @@ const AdminQuestion = () => {
   if (!categoryList || !chapterList) return <></>;
 
   return (
-    <div className="mx-2">
+    <div>
       <div className="sticky top-0 z-10 bg-white">
-        <div className="flex gap-1 py-2">
+        <div className="flex gap-1 p-2">
           <div className="w-1/12">ID</div>
           <div className="w-5/12">題目/答案格式/答案</div>
           <div className="w-2/12">類別/章節</div>
@@ -69,7 +69,7 @@ const AdminQuestion = () => {
           <div className="w-1/12">有詳解</div>
           <div className="w-1/12" />
         </div>
-        <div className="h-[1px] bg-black" />
+        <div className="h-[1px] bg-grey-900" />
       </div>
       <MathJax>
         {question?.map((v) => (

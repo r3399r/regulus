@@ -34,7 +34,7 @@ const QuestionRow = ({ question, chapterList, categoryList }: Props) => {
 
   return (
     <div>
-      <div className="flex gap-1 py-2">
+      <div className="flex gap-1 p-2">
         <div
           className="w-1/12 cursor-pointer"
           onClick={() => navigate(`/admin/question/edit?id=${question.id}`)}
@@ -102,7 +102,7 @@ const QuestionRow = ({ question, chapterList, categoryList }: Props) => {
           </Button>
         </div>
       </div>
-      <div className="h-[1px] bg-black" />
+      <div className="h-[1px] bg-grey-900" />
     </div>
   );
 };
