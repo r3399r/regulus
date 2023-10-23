@@ -78,3 +78,27 @@ export const editQuestion = async (id: string, formData: QuestionForm, image?: F
     dispatch(finishWaiting());
   }
 };
+
+export const updateQuestion = async (
+  id: string,
+  params: {
+    chapter: string[];
+    category: string[];
+    tag: string;
+    youtube: string;
+    hasSolution: boolean;
+  },
+) => {
+  try {
+    dispatch(startWaiting());
+    await questionEndpoint.putQuestion(id.toLowerCase(), {
+      category: params.category,
+      chapter: params.chapter,
+      tag: params.tag === '' ? undefined : params.tag.split(/[ ,]+/),
+      youtube: params.youtube.length > 0 ? params.youtube : undefined,
+      hasSolution: params.hasSolution,
+    });
+  } finally {
+    dispatch(finishWaiting());
+  }
+};

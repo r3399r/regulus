@@ -1,16 +1,16 @@
-import { Button, Checkbox, MenuItem, Pagination, TextField } from '@mui/material';
+import { Pagination } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import MultiSelect from 'src/component/MultiSelect';
 import useQuery from 'src/hook/useQuery';
 import { GetQuestionResponse } from 'src/model/backend/api';
 import { Category } from 'src/model/backend/entity/CategoryEntity';
 import { Chapter } from 'src/model/backend/entity/ChapterEntity';
 import { openSnackbar } from 'src/redux/uiSlice';
 import { getFields, getQuestionList } from 'src/service/QuestionService';
+import QuestionRow from './QuestionRow';
 
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 50;
 
 const AdminQuestion = () => {
   const dispatch = useDispatch();
@@ -73,57 +73,12 @@ const AdminQuestion = () => {
       </div>
       <MathJax>
         {question?.map((v) => (
-          <div key={v.id}>
-            <div className="flex gap-1 py-2">
-              <div className="w-1/12">{v.id.toUpperCase()}</div>
-              <div className="w-5/12">
-                <div className="whitespace-pre-wrap">{v.content}</div>
-                <div className="flex flex-wrap">
-                  {v.imageUrl?.map((o, i) => (
-                    <div key={i}>
-                      <img src={o} />
-                    </div>
-                  ))}
-                </div>
-                <div>Answer Format: {v.answerFormat}</div>
-                <div>Answer: {v.answer}</div>
-              </div>
-              <div className="flex w-2/12 flex-col gap-3 py-2">
-                <MultiSelect label="類別" defaultValue={v.categories.map((o) => o.name)}>
-                  {categoryList.map((o) => (
-                    <MenuItem key={o.id} value={o.name}>
-                      {o.name}
-                    </MenuItem>
-                  ))}
-                </MultiSelect>
-                <MultiSelect label="章節" defaultValue={v.chapters.map((o) => o.name)}>
-                  {chapterList.map((o) => (
-                    <MenuItem key={o.id} value={o.name}>
-                      {o.name}
-                    </MenuItem>
-                  ))}
-                </MultiSelect>
-              </div>
-              <div className="flex w-2/12 flex-col gap-3 py-2">
-                <TextField
-                  fullWidth
-                  autoComplete="off"
-                  label="標籤"
-                  value={v.tags.map((o) => o.name).join(',')}
-                />
-                <TextField fullWidth autoComplete="off" label="Youtube 影片 ID" value={v.youtube} />
-              </div>
-              <div className="w-1/12">
-                <Checkbox checked={v.hasSolution} />
-              </div>
-              <div className="w-1/12 py-2">
-                <Button variant="contained" color="warning">
-                  更新
-                </Button>
-              </div>
-            </div>
-            <div className="h-[1px] bg-black" />
-          </div>
+          <QuestionRow
+            key={v.id}
+            question={v}
+            categoryList={categoryList}
+            chapterList={chapterList}
+          />
         ))}
       </MathJax>
       <div className="mt-4 flex justify-center">
