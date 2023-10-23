@@ -198,11 +198,12 @@ export class QuestionService {
     const offset = params?.offset ? Number(params.offset) : 0;
 
     let questionIds: string[] | null = null;
-    if (params?.category || params?.chapter || params?.tag)
+    if (params?.category || params?.chapter || params?.tag || params?.q)
       questionIds = await this.questionAccess.findDistinctId({
         category: params?.category?.split(','),
         chapter: params?.chapter?.split(','),
         tag: params?.tag?.split(','),
+        q: params?.q,
       });
 
     const res = await this.questionAccess.findAndCount({

@@ -50,6 +50,7 @@ export class QuestionAccess {
     category?: string[];
     chapter?: string[];
     tag?: string[];
+    q?: string;
   }): Promise<string[]> {
     const qr = await this.database.getQueryRunner();
     const queryBuilder = qr.manager
@@ -74,6 +75,10 @@ export class QuestionAccess {
         queryBuilder.andWhere('t.name IN (:...tag)', {
           tag: options.tag,
         });
+      if (options.q)
+        queryBuilder.andWhere('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
     } else if (options.chapter) {
       queryBuilder.where('c2.name IN (:...chapter)', {
         chapter: options.chapter,
@@ -82,10 +87,23 @@ export class QuestionAccess {
         queryBuilder.andWhere('t.name IN (:...tag)', {
           tag: options.tag,
         });
-    } else if (options.tag)
+      if (options.q)
+        queryBuilder.andWhere('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
+    } else if (options.tag) {
       queryBuilder.where('t.name IN (:...tag)', {
         tag: options.tag,
       });
+      if (options.q)
+        queryBuilder.andWhere('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
+    } else if (options.q)
+      if (options.q)
+        queryBuilder.where('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
 
     queryBuilder.groupBy('q.id');
 

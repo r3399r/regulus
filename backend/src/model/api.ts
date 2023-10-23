@@ -40,6 +40,7 @@ export type GetQuestionParams = PaginationParams & {
   category?: string;
   chapter?: string;
   tag?: string;
+  q?: string;
 };
 
 export type GetQuestionResponse = (Question & {

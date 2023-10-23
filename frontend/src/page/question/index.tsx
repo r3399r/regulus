@@ -31,6 +31,7 @@ const QuestionPage = () => {
     category?: string;
     chapter?: string;
     tag?: string;
+    q?: string;
   }>();
   const [question, setQuestion] = useState<GetQuestionResponse>();
   const [page, setPage] = useState<number>(1);
@@ -41,6 +42,7 @@ const QuestionPage = () => {
   const [openChapter, setOpenChapter] = useState<boolean>(false);
   const [categoryList, setCatogeryList] = useState<Category[]>();
   const [chapterList, setChapterList] = useState<Chapter[]>();
+  const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
     getFields().then((res) => {
@@ -55,6 +57,7 @@ const QuestionPage = () => {
       category: query.category && query.category.length > 0 ? query.category : undefined,
       chapter: query.chapter && query.chapter.length > 0 ? query.chapter : undefined,
       tag: query.tag && query.tag.length > 0 ? query.tag : undefined,
+      q: query.q && query.q.length > 0 ? query.q : undefined,
       limit: String(DEFAULT_LIMIT),
       offset: String(offset),
     })
@@ -100,10 +103,20 @@ const QuestionPage = () => {
                 <div>標籤</div>
                 <img src={IcArrow} />
               </div>
-              <div className="relative">
-                <input className="rounded-md border border-grey-200 py-2 pl-9 pr-2" />
+              <form
+                className="relative"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  navigate({ search: createSearchParams({ ...query, q: search }).toString() });
+                }}
+              >
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="rounded-md border border-grey-200 py-2 pl-9 pr-2"
+                />
                 <img src={IcSearch} className="absolute left-2 top-2" />
-              </div>
+              </form>
             </div>
             <div>搜尋結果: {count} 題</div>
           </div>
@@ -222,10 +235,10 @@ const QuestionPage = () => {
                       'bg-grey-200 text-grey-900': !selected.includes(v.id),
                     })}
                     onClick={() => {
-                      let tempSelected = [...selected];
-                      if (tempSelected.includes(v.id)) tempSelected.filter((o) => o !== v.id);
-                      else tempSelected = [...tempSelected, v.id];
-                      setSelected(tempSelected);
+                      const tempSelected = [...selected];
+                      if (tempSelected.includes(v.id))
+                        setSelected(tempSelected.filter((o) => o !== v.id));
+                      else setSelected([...tempSelected, v.id]);
                     }}
                   >
                     <div className="text-sm leading-[1.5]">列印</div>
