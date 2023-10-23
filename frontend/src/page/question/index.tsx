@@ -3,7 +3,7 @@ import { MathJax } from 'better-react-mathjax';
 import classNames from 'classnames';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
 import useQuery from 'src/hook/useQuery';
 import IcArrow from 'src/image/ic-arrow.svg';
 import IcCheckGrey from 'src/image/ic-check-grey.svg';
@@ -14,15 +14,19 @@ import IcPrint from 'src/image/ic-print.svg';
 import IcSearch from 'src/image/ic-search.svg';
 import IcVideo from 'src/image/ic-video.svg';
 import { GetQuestionResponse } from 'src/model/backend/api';
+import { Category } from 'src/model/backend/entity/CategoryEntity';
+import { Chapter } from 'src/model/backend/entity/ChapterEntity';
 import { openSnackbar } from 'src/redux/uiSlice';
-import { getQuestionList } from 'src/service/QuestionService';
+import { getFields, getQuestionList } from 'src/service/QuestionService';
+import ModalCategory from './ModalCategory';
+import ModalChapter from './ModalChapter';
 
 const DEFAULT_LIMIT = 10;
 
 const QuestionPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id, category, chapter, tag } = useQuery<{
+  const query = useQuery<{
     id?: string;
     category?: string;
     chapter?: string;
@@ -33,13 +37,24 @@ const QuestionPage = () => {
   const [offset, setOffset] = useState<number>(0);
   const [count, setCount] = useState<number>(0);
   const [selected, setSelected] = useState<string[]>([]);
+  const [openCategory, setOpenCategory] = useState<boolean>(false);
+  const [openChapter, setOpenChapter] = useState<boolean>(false);
+  const [categoryList, setCatogeryList] = useState<Category[]>();
+  const [chapterList, setChapterList] = useState<Chapter[]>();
+
+  useEffect(() => {
+    getFields().then((res) => {
+      setCatogeryList(res.category);
+      setChapterList(res.chapter);
+    });
+  }, []);
 
   useEffect(() => {
     getQuestionList({
-      id,
-      category,
-      chapter,
-      tag,
+      id: query.id && query.id.length > 0 ? query.id : undefined,
+      category: query.category && query.category.length > 0 ? query.category : undefined,
+      chapter: query.chapter && query.chapter.length > 0 ? query.chapter : undefined,
+      tag: query.tag && query.tag.length > 0 ? query.tag : undefined,
       limit: String(DEFAULT_LIMIT),
       offset: String(offset),
     })
@@ -48,7 +63,7 @@ const QuestionPage = () => {
         setCount(res.count);
       })
       .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
-  }, [id, category, chapter, tag, offset]);
+  }, [query, offset]);
 
   const handlePaginationChange = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -57,8 +72,8 @@ const QuestionPage = () => {
 
   return (
     <div>
-      <div className="sticky top-0 z-10 bg-grey-50">
-        <div className="mx-4 flex max-w-[1600px] flex-wrap justify-between gap-x-2 gap-y-4 py-4 sm:mx-10 lg:mx-auto">
+      <div className="sticky top-0 z-10">
+        <div className="mx-4 flex max-w-[1600px] flex-wrap justify-between gap-x-2 gap-y-4 bg-grey-50 py-4 sm:mx-10 lg:mx-auto">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex">
@@ -67,11 +82,17 @@ const QuestionPage = () => {
                 </div>
                 <div className="text-sm leading-[1.5] text-grey-700">篩選:</div>
               </div>
-              <div className="flex cursor-pointer gap-1 rounded-md border border-solid border-grey-300 bg-white p-2">
+              <div
+                className="flex cursor-pointer gap-1 rounded-md border border-solid border-grey-300 bg-white p-2"
+                onClick={() => setOpenCategory(true)}
+              >
                 <div>類別</div>
                 <img src={IcArrow} />
               </div>
-              <div className="flex cursor-pointer gap-1 rounded-md border border-solid border-grey-300 bg-white p-2">
+              <div
+                className="flex cursor-pointer gap-1 rounded-md border border-solid border-grey-300 bg-white p-2"
+                onClick={() => setOpenChapter(true)}
+              >
                 <div>章節</div>
                 <img src={IcArrow} />
               </div>
@@ -85,7 +106,6 @@ const QuestionPage = () => {
               </div>
             </div>
             <div>搜尋結果: {count} 題</div>
-            <div className="cursor-pointer text-indigo-500 underline">清除</div>
           </div>
           <div>
             <button
@@ -103,11 +123,28 @@ const QuestionPage = () => {
             </button>
           </div>
         </div>
+        <div className="mx-4 flex h-12 max-w-[1600px] flex-wrap items-center gap-2 bg-grey-100 sm:mx-10 lg:mx-auto">
+          {(query.category || query.chapter || query.tag) && (
+            <div
+              className="cursor-pointer rounded-md bg-grey-200 px-2 py-[2px] text-xs leading-[1.5]"
+              onClick={() => navigate({ search: createSearchParams({}).toString() })}
+            >
+              清除
+            </div>
+          )}
+          {[
+            ...(query.category?.split(',') ?? []),
+            ...(query.chapter?.split(',') ?? []),
+            ...(query.tag?.split(',') ?? []),
+          ].map((v, i) => (
+            <div key={i}>{v}</div>
+          ))}
+        </div>
       </div>
       <MathJax>
-        <div className="mx-4 mt-12 flex max-w-[1600px] flex-wrap gap-6 sm:mx-10 lg:mx-auto">
+        <div className="mx-4 flex max-w-[1600px] flex-wrap gap-6 sm:mx-10 lg:mx-auto">
           {question?.map((v) => (
-            <div key={v.id} className="h-min w-[calc(50%-12px)] bg-white p-6">
+            <div key={v.id} className="h-min w-full bg-white p-6 sm:w-[calc(50%-12px)]">
               <div className="mb-2 text-xs text-grey-600">ID: {v.id.toUpperCase()}</div>
               <div className="mb-2 flex flex-wrap gap-2">
                 {v.categories.map((o) => (
@@ -135,7 +172,7 @@ const QuestionPage = () => {
                   </div>
                 ))}
               </div>
-              <div className="mb-4 flex items-center gap-2">
+              <div className="mb-4 flex items-center gap-2 text-sm leading-[1.5]">
                 <div>難易度:</div>
                 {v.average ? (
                   <Rating value={6 - v.average} precision={0.1} readOnly size="small" />
@@ -207,6 +244,30 @@ const QuestionPage = () => {
           onChange={handlePaginationChange}
         />
       </div>
+      {categoryList && (
+        <ModalCategory
+          open={openCategory}
+          handleClose={() => setOpenCategory(false)}
+          category={categoryList}
+          onSubmit={(c) => {
+            setOpenCategory(false);
+            navigate({ search: createSearchParams({ ...query, category: c }).toString() });
+          }}
+          query={query.category}
+        />
+      )}
+      {chapterList && (
+        <ModalChapter
+          open={openChapter}
+          handleClose={() => setOpenChapter(false)}
+          chapter={chapterList}
+          onSubmit={(c) => {
+            setOpenChapter(false);
+            navigate({ search: createSearchParams({ ...query, chapter: c }).toString() });
+          }}
+          query={query.chapter}
+        />
+      )}
     </div>
   );
 };
