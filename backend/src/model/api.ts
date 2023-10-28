@@ -2,6 +2,7 @@ import { Category } from './entity/CategoryEntity';
 import { Chapter } from './entity/ChapterEntity';
 import { Question } from './entity/QuestionEntity';
 import { Result } from './entity/ResultEntity';
+import { Tag } from './entity/TagEntity';
 import { User } from './entity/UserEntity';
 import { PaginationParams } from './Pagination';
 
@@ -52,6 +53,12 @@ export type GetFieldResponse = {
   category: Category[];
   chapter: Chapter[];
 };
+
+export type GetTagParams = {
+  query?: string;
+};
+
+export type GetTagResponse = Tag[];
 
 export type PostUserRequest = {
   name: string;

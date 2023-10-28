@@ -20,6 +20,7 @@ import { openSnackbar } from 'src/redux/uiSlice';
 import { getFields, getQuestionList } from 'src/service/QuestionService';
 import ModalCategory from './ModalCategory';
 import ModalChapter from './ModalChapter';
+import ModalTag from './ModalTag';
 
 const DEFAULT_LIMIT = 10;
 
@@ -40,6 +41,7 @@ const QuestionPage = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [openCategory, setOpenCategory] = useState<boolean>(false);
   const [openChapter, setOpenChapter] = useState<boolean>(false);
+  const [openTag, setOpenTag] = useState<boolean>(false);
   const [categoryList, setCatogeryList] = useState<Category[]>();
   const [chapterList, setChapterList] = useState<Chapter[]>();
   const [search, setSearch] = useState<string>('');
@@ -99,7 +101,10 @@ const QuestionPage = () => {
                 <div>章節</div>
                 <img src={IcArrow} />
               </div>
-              <div className="flex cursor-pointer gap-1 rounded-md border border-solid border-grey-300 bg-white p-2">
+              <div
+                className="flex cursor-pointer gap-1 rounded-md border border-solid border-grey-300 bg-white p-2"
+                onClick={() => setOpenTag(true)}
+              >
                 <div>標籤</div>
                 <img src={IcArrow} />
               </div>
@@ -141,7 +146,10 @@ const QuestionPage = () => {
         {(query.category || query.chapter || query.tag) && (
           <div
             className="cursor-pointer rounded-md bg-grey-200 px-2 py-[2px] text-xs leading-[1.5]"
-            onClick={() => navigate({ search: createSearchParams({}).toString() })}
+            onClick={() => {
+              setOffset(0);
+              navigate({ search: createSearchParams({}).toString() });
+            }}
           >
             清除
           </div>
@@ -172,14 +180,6 @@ const QuestionPage = () => {
                   <div
                     key={o.id}
                     className="rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
-                  >
-                    {o.name}
-                  </div>
-                ))}
-                {v.tags.map((o) => (
-                  <div
-                    key={o.id}
-                    className="rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
                   >
                     {o.name}
                   </div>
@@ -264,6 +264,7 @@ const QuestionPage = () => {
           category={categoryList}
           onSubmit={(c) => {
             setOpenCategory(false);
+            setOffset(0);
             navigate({ search: createSearchParams({ ...query, category: c }).toString() });
           }}
           query={query.category}
@@ -276,11 +277,22 @@ const QuestionPage = () => {
           chapter={chapterList}
           onSubmit={(c) => {
             setOpenChapter(false);
+            setOffset(0);
             navigate({ search: createSearchParams({ ...query, chapter: c }).toString() });
           }}
           query={query.chapter}
         />
       )}
+      <ModalTag
+        open={openTag}
+        handleClose={() => setOpenTag(false)}
+        onSubmit={(t) => {
+          setOpenTag(false);
+          setOffset(0);
+          navigate({ search: createSearchParams({ ...query, tag: t }).toString() });
+        }}
+        query={query.tag}
+      />
     </div>
   );
 };

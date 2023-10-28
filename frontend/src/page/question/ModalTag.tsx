@@ -1,18 +1,37 @@
 import { useEffect, useState } from 'react';
+import fieldEndpoint from 'src/api/fieldEndpoint';
 import Checkbox from 'src/component/Checkbox';
 import Modal from 'src/component/Modal';
-import { Chapter } from 'src/model/backend/entity/ChapterEntity';
+import { Tag } from 'src/model/backend/entity/TagEntity';
 
 type Props = {
   open: boolean;
   handleClose: () => void;
-  chapter: Chapter[];
   onSubmit: (v: string) => void;
   query?: string;
 };
 
-const ModalTag = ({ open, handleClose, chapter, onSubmit, query }: Props) => {
+const ModalTag = ({ open, handleClose, onSubmit, query }: Props) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [input, setInput] = useState<string>();
+  const [tag, setTag] = useState<Tag[]>();
+
+  useEffect(() => {
+    if (!input) {
+      setTag(undefined);
+
+      return;
+    }
+    const timer = setTimeout(() => {
+      fieldEndpoint.getFieldTag({ query: input }).then((res) => {
+        setTag(res.data);
+      });
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [input]);
 
   useEffect(() => {
     if (query) setSelected(new Set(query.split(',')));
@@ -28,8 +47,14 @@ const ModalTag = ({ open, handleClose, chapter, onSubmit, query }: Props) => {
   return (
     <Modal open={open} handleClose={onClose}>
       <>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="w-full rounded-md border border-grey-300 p-2"
+          placeholder="輸入文字"
+        />
         <div className="flex flex-wrap py-4">
-          {chapter.map((v) => (
+          {tag?.map((v) => (
             <div key={v.id} className="w-full p-2 sm:w-1/3">
               <Checkbox
                 label={v.name}
