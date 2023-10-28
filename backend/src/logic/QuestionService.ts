@@ -90,7 +90,6 @@ export class QuestionService {
     question.id = uniqid.time();
     question.content = data.content;
     question.answer = data.answer;
-    question.answerFormat = data.answerFormat;
     question.categories = thisCategories;
     question.chapters = thisChapters;
     question.tags = thisTags;
@@ -145,7 +144,6 @@ export class QuestionService {
 
     question.content = data.content ?? question.content;
     question.answer = data.answer ?? question.answer;
-    question.answerFormat = data.answerFormat ?? question.answerFormat;
     question.categories = thisCategories ?? question.categories;
     question.chapters = thisChapters ?? question.chapters;
     question.tags = thisTags ?? question.tags;

@@ -43,7 +43,6 @@ const adminQuestionEdit = () => {
       if (res.length !== 1) return;
       methods.setValue('content', res[0].content);
       methods.setValue('answer', res[0].answer ?? '');
-      methods.setValue('answerFormat', res[0].answerFormat ?? '');
       methods.setValue('category', res[0].categories.map((v) => v.name).join(','));
       methods.setValue('chapter', res[0].chapters.map((v) => v.name).join(','));
       methods.setValue('tag', res[0].tags.map((v) => v.name).join(','));
@@ -56,7 +55,7 @@ const adminQuestionEdit = () => {
   useEffect(() => {
     setPreview(false);
     setTimeout(() => setPreview(true), 10);
-  }, [methods.watch('content'), methods.watch('answer'), methods.watch('answerFormat')]);
+  }, [methods.watch('content'), methods.watch('answer')]);
 
   const onSubmit = (data: QuestionForm) => {
     if (id === undefined)
@@ -99,8 +98,7 @@ const adminQuestionEdit = () => {
           >{`刪除 ${v.name}`}</Button>
         ))}
         <TextField label="圖片" onClick={() => inputRef.current?.click()} />
-        <FormInput name="answerFormat" label="答案格式" required />
-        <FormInput name="answer" label="答案" required />
+        <FormInput name="answer" label="答案" />
         <div className="flex gap-4">
           <FormMultiSelect name="category" label="類別">
             {category.map((v) => (
@@ -151,10 +149,6 @@ const adminQuestionEdit = () => {
                       <img src={v} />
                     </div>
                   ))}
-            </div>
-            <div className="flex gap-2">
-              <div>Ans:</div>
-              <div>{methods.watch('answerFormat')}</div>
             </div>
             <div className="flex gap-2">
               <div>Ans:</div>

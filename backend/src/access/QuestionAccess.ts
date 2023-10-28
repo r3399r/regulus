@@ -56,12 +56,12 @@ export class QuestionAccess {
     const queryBuilder = qr.manager
       .createQueryBuilder(QuestionEntity.name, 'q')
       .select('q.id')
-      .innerJoin('question_category', 'qc', 'qc.question_id = q.id')
-      .innerJoin('category', 'c', 'qc.category_id = c.id')
-      .innerJoin('question_chapter', 'qc2', 'qc2.question_id = q.id')
-      .innerJoin('chapter', 'c2', 'qc2.chapter_id = c2.id')
-      .innerJoin('question_tag', 'qt', 'qt.question_id = q.id')
-      .innerJoin('tag', 't', 'qt.tag_id = t.id');
+      .leftJoin('question_category', 'qc', 'qc.question_id = q.id')
+      .leftJoin('category', 'c', 'qc.category_id = c.id')
+      .leftJoin('question_chapter', 'qc2', 'qc2.question_id = q.id')
+      .leftJoin('chapter', 'c2', 'qc2.chapter_id = c2.id')
+      .leftJoin('question_tag', 'qt', 'qt.question_id = q.id')
+      .leftJoin('tag', 't', 'qt.tag_id = t.id');
 
     if (options.category) {
       queryBuilder.where('c.name IN (:...category)', {

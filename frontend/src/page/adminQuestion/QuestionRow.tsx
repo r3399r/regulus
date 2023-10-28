@@ -50,8 +50,7 @@ const QuestionRow = ({ question, chapterList, categoryList }: Props) => {
               </div>
             ))}
           </div>
-          <div>Answer Format: {question.answerFormat}</div>
-          <div>Answer: {question.answer}</div>
+          <div className="mt-2">Ans: {question.answer}</div>
         </div>
         <div className="flex w-2/12 flex-col gap-3 py-2">
           <MultiSelect

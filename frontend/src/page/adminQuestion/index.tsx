@@ -1,7 +1,8 @@
-import { Pagination } from '@mui/material';
+import { Button, Pagination } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import useQuery from 'src/hook/useQuery';
 import { GetQuestionResponse } from 'src/model/backend/api';
 import { Category } from 'src/model/backend/entity/CategoryEntity';
@@ -13,6 +14,7 @@ import QuestionRow from './QuestionRow';
 const DEFAULT_LIMIT = 50;
 
 const AdminQuestion = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [categoryList, setCatogeryList] = useState<Category[]>();
   const [chapterList, setChapterList] = useState<Chapter[]>();
@@ -60,10 +62,16 @@ const AdminQuestion = () => {
 
   return (
     <div>
-      <div className="sticky top-0 z-10 bg-white">
+      <div className="m-2">
+        <Button variant="contained" onClick={() => navigate('./edit')}>
+          新增題目
+        </Button>
+      </div>
+      <div className="h-[1px] bg-grey-900" />
+      <div className="sticky top-0 z-10">
         <div className="flex gap-1 p-2">
           <div className="w-1/12">ID</div>
-          <div className="w-5/12">題目/答案格式/答案</div>
+          <div className="w-5/12">題目/答案</div>
           <div className="w-2/12">類別/章節</div>
           <div className="w-2/12">標籤/Youtube ID</div>
           <div className="w-1/12">有詳解</div>

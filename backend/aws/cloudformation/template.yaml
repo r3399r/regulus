@@ -388,7 +388,6 @@ Resources:
               "properties": {
                 "content": {"type": "string"},
                 "answer": {"type": "string"},
-                "answerFormat": {"type": "string"},
                 "youtube": {"type": "string"},
                 "hasSolution": {"type": "boolean"},
                 "category": {
@@ -406,14 +405,13 @@ Resources:
                 "defaultScore": {"type": "number"},
                 "defaultCount": {"type": "integer"}
               },
-              "required": ["content","answer","answerFormat","hasSolution"]
+              "required": ["content","hasSolution"]
             },
             "putQuestion": {
               "type": "object",
               "properties": {
                 "content": {"type": "string"},
                 "answer": {"type": "string"},
-                "answerFormat": {"type": "string"},
                 "youtube": {"type": "string"},
                 "hasSolution": {"type": "boolean"},
                 "category": {

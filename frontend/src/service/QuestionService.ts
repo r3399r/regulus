@@ -45,7 +45,6 @@ export const addNewQuestion = async (formData: QuestionForm, image?: File[]) => 
     await questionEndpoint.postQuestion({
       content: formData.content,
       answer: formData.answer,
-      answerFormat: formData.answerFormat,
       category: formData.category === '' ? undefined : formData.category.split(/[ ,]+/),
       chapter: formData.chapter === '' ? undefined : formData.chapter.split(/[ ,]+/),
       tag: formData.tag === '' ? undefined : formData.tag.split(/[ ,]+/),
@@ -66,7 +65,6 @@ export const editQuestion = async (id: string, formData: QuestionForm, image?: F
     await questionEndpoint.putQuestion(id.toLowerCase(), {
       content: formData.content,
       answer: formData.answer,
-      answerFormat: formData.answerFormat,
       category: formData.category.split(/[ ,]+/),
       chapter: formData.chapter.split(/[ ,]+/),
       tag: formData.tag === '' ? undefined : formData.tag.split(/[ ,]+/),

@@ -22,7 +22,7 @@ import ModalCategory from './ModalCategory';
 import ModalChapter from './ModalChapter';
 import ModalTag from './ModalTag';
 
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 50;
 
 const QuestionPage = () => {
   const navigate = useNavigate();

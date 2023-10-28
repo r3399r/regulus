@@ -12,7 +12,6 @@ const Print = () => {
   const [display, setDisplay] = useState<boolean>(true);
   const [width, setWidth] = useState<string>('8');
   const [showId, setShowId] = useState<boolean>(false);
-  const [showAnswerFormat, setShowAnswerFormat] = useState<boolean>(false);
   const [showAnswer, setShowAnswer] = useState<boolean>(true);
   const [showBorder, setShowBorder] = useState<boolean>(true);
   const [showNumber, setShowNumber] = useState<boolean>(false);
@@ -20,7 +19,7 @@ const Print = () => {
   useEffect(() => {
     setDisplay(false);
     setTimeout(() => setDisplay(true), 10);
-  }, [width, showAnswer, showAnswerFormat]);
+  }, [width, showAnswer]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -53,11 +52,6 @@ const Print = () => {
             label="顯示答案"
             checked={showAnswer}
             onChange={(e) => setShowAnswer(e.target.checked)}
-          />
-          <Checkbox
-            label="顯示答案格式"
-            checked={showAnswerFormat}
-            onChange={(e) => setShowAnswerFormat(e.target.checked)}
           />
           <Checkbox
             label="顯示邊框"
@@ -98,9 +92,6 @@ const Print = () => {
                       </div>
                     ))}
                   </div>
-                  {showAnswerFormat && (
-                    <div className="mt-2 text-grey-700">Ans: {v.answerFormat}</div>
-                  )}
                   {showAnswer && <div className="mt-2 text-grey-700">Ans: {v.answer}</div>}
                 </div>
               ))}
