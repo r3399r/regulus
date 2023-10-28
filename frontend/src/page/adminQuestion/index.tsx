@@ -1,179 +1,101 @@
-import { Button, MenuItem, TextField } from '@mui/material';
+import { Button, Pagination } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import Form from 'src/component/Form';
-import FormCheckbox from 'src/component/FormCheckbox';
-import FormInput from 'src/component/FormInput';
-import FormMultiSelect from 'src/component/FormMultiSelect';
+import { useNavigate } from 'react-router-dom';
 import useQuery from 'src/hook/useQuery';
+import { GetQuestionResponse } from 'src/model/backend/api';
 import { Category } from 'src/model/backend/entity/CategoryEntity';
 import { Chapter } from 'src/model/backend/entity/ChapterEntity';
-import { QuestionForm } from 'src/model/Form';
 import { openSnackbar } from 'src/redux/uiSlice';
-import {
-  addNewQuestion,
-  editQuestion,
-  getFields,
-  getQuestionById,
-} from 'src/service/QuestionService';
+import { getFields, getQuestionList } from 'src/service/QuestionService';
+import QuestionRow from './QuestionRow';
+
+const DEFAULT_LIMIT = 50;
 
 const AdminQuestion = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const methods = useForm<QuestionForm>();
-  const [category, setCatogery] = useState<Category[]>();
-  const [chapter, setChapter] = useState<Chapter[]>();
-  const { id } = useQuery<{ id?: string }>();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState<File[]>();
-  const [imageUrl, setImageUrl] = useState<string[] | null>(null);
-  const [preview, setPreview] = useState<boolean>(true);
+  const [categoryList, setCatogeryList] = useState<Category[]>();
+  const [chapterList, setChapterList] = useState<Chapter[]>();
+  const { id, category, chapter, tag } = useQuery<{
+    id?: string;
+    category?: string;
+    chapter?: string;
+    tag?: string;
+  }>();
+  const [question, setQuestion] = useState<GetQuestionResponse>();
+  const [page, setPage] = useState<number>(1);
+  const [offset, setOffset] = useState<number>(0);
+  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     getFields().then((res) => {
-      setCatogery(res.category);
-      setChapter(res.chapter);
+      setCatogeryList(res.category);
+      setChapterList(res.chapter);
     });
   }, []);
 
   useEffect(() => {
-    if (id === undefined) return;
-    getQuestionById(id).then((res) => {
-      if (res.length !== 1) return;
-      methods.setValue('content', res[0].content);
-      methods.setValue('answer', res[0].answer ?? '');
-      methods.setValue('answerFormat', res[0].answerFormat ?? '');
-      methods.setValue('category', res[0].categories.map((v) => v.name).join(','));
-      methods.setValue('chapter', res[0].chapters.map((v) => v.name).join(','));
-      methods.setValue('tag', res[0].tags.map((v) => v.name).join(','));
-      methods.setValue('youtube', res[0].youtube ?? '');
-      methods.setValue('hasSolution', res[0].hasSolution);
-      setImageUrl(res[0].imageUrl);
-    });
-  }, [id]);
+    setQuestion(undefined);
+    getQuestionList({
+      id,
+      category,
+      chapter,
+      tag,
+      limit: String(DEFAULT_LIMIT),
+      offset: String(offset),
+    })
+      .then((res) => {
+        setQuestion(res.data);
+        setCount(res.count);
+      })
+      .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
+  }, [id, category, chapter, tag, offset]);
 
-  useEffect(() => {
-    setPreview(false);
-    setTimeout(() => setPreview(true), 10);
-  }, [methods.watch('content'), methods.watch('answer'), methods.watch('answerFormat')]);
-
-  const onSubmit = (data: QuestionForm) => {
-    if (id === undefined)
-      addNewQuestion(data, image)
-        .then(() => {
-          dispatch(openSnackbar({ message: '新增成功', severity: 'success' }));
-          methods.reset();
-          setImage(undefined);
-        })
-        .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
-    else
-      editQuestion(id, data, image)
-        .then(() => dispatch(openSnackbar({ message: '編輯成功', severity: 'success' })))
-        .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
+  const handlePaginationChange = (event: ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    setOffset((value - 1) * DEFAULT_LIMIT);
   };
 
-  if (!category || !chapter) return <></>;
+  if (!categoryList || !chapterList) return <></>;
 
   return (
-    <div className="flex gap-4">
-      <Form methods={methods} onSubmit={onSubmit} className="my-4 ml-4 flex w-1/2 flex-col gap-4">
-        <div className="text-xl font-bold">題目編輯器</div>
-        <FormInput
-          name="content"
-          label="內容"
-          multiline
-          required
-          minRows={3}
-          helperText="MathJax: \(...\) \[...\]"
-        />
-        {image?.map((v, i) => (
-          <Button
-            key={i}
-            variant="contained"
-            color="error"
-            onClick={() => {
-              if (image.length === 1) setImage(undefined);
-              else setImage(image.filter((o) => o !== v));
-            }}
-          >{`刪除 ${v.name}`}</Button>
-        ))}
-        <TextField label="圖片" onClick={() => inputRef.current?.click()} />
-        <FormInput name="answerFormat" label="答案格式" required />
-        <FormInput name="answer" label="答案" required />
-        <div className="flex gap-4">
-          <FormMultiSelect name="category" label="類別">
-            {category.map((v) => (
-              <MenuItem key={v.id} value={v.name}>
-                {v.name}
-              </MenuItem>
-            ))}
-          </FormMultiSelect>
-          <FormMultiSelect name="chapter" label="章節">
-            {chapter.map((v) => (
-              <MenuItem key={v.id} value={v.name}>
-                {v.name}
-              </MenuItem>
-            ))}
-          </FormMultiSelect>
-        </div>
-        <FormInput name="tag" label="標籤" helperText="以小逗號分隔" />
-        <FormInput name="youtube" label="Youtube 影片 ID" />
-        <div>
-          <FormCheckbox name="hasSolution" label="有詳解" />
-        </div>
-        {id === undefined && (
-          <div className="flex gap-4">
-            <FormInput className="flex-1" name="defaultScore" label="預設總分" type="number" />
-            <FormInput className="flex-1" name="defaultCount" label="預設總人數" type="number" />
-          </div>
-        )}
-        <div>
-          <Button type="submit" variant="contained">
-            {id === undefined ? '新增' : '編輯'}
-          </Button>
-        </div>
-      </Form>
-      <div className="my-4 mr-4 w-1/2">
-        <div className="text-xl font-bold">預覽</div>
-        {preview && (
-          <MathJax dynamic>
-            <div className="mt-4 whitespace-pre-wrap">{methods.watch('content')}</div>
-            <div className="flex flex-wrap">
-              {image
-                ? image.map((v, i) => (
-                    <div key={i}>
-                      <img src={URL.createObjectURL(v)} />
-                    </div>
-                  ))
-                : imageUrl?.map((v, i) => (
-                    <div key={i}>
-                      <img src={v} />
-                    </div>
-                  ))}
-            </div>
-            <div className="flex gap-2">
-              <div>Ans:</div>
-              <div>{methods.watch('answerFormat')}</div>
-            </div>
-            <div className="flex gap-2">
-              <div>Ans:</div>
-              <div>{methods.watch('answer')}</div>
-            </div>
-          </MathJax>
-        )}
+    <div>
+      <div className="m-2">
+        <Button variant="contained" onClick={() => navigate('./edit')}>
+          新增題目
+        </Button>
       </div>
-      <input
-        type="file"
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          if (e.target.files && e.target.files.length > 0)
-            setImage([...(image ?? []), ...e.target.files]);
-        }}
-        ref={inputRef}
-        className="hidden"
-        accept="image/*"
-        multiple={true}
-      />
+      <div className="h-[1px] bg-grey-900" />
+      <div className="sticky top-0 z-10">
+        <div className="flex gap-1 p-2">
+          <div className="w-1/12">ID</div>
+          <div className="w-5/12">題目/答案</div>
+          <div className="w-2/12">類別/章節</div>
+          <div className="w-2/12">標籤/Youtube ID</div>
+          <div className="w-1/12">有詳解</div>
+          <div className="w-1/12" />
+        </div>
+        <div className="h-[1px] bg-grey-900" />
+      </div>
+      <MathJax>
+        {question?.map((v) => (
+          <QuestionRow
+            key={v.id}
+            question={v}
+            categoryList={categoryList}
+            chapterList={chapterList}
+          />
+        ))}
+      </MathJax>
+      <div className="mt-4 flex justify-center">
+        <Pagination
+          count={Math.ceil(count / DEFAULT_LIMIT)}
+          page={page}
+          onChange={handlePaginationChange}
+        />
+      </div>
     </div>
   );
 };

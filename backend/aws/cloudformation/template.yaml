@@ -186,6 +186,33 @@ Resources:
                 }
               }
             },
+            "/api/field/tag": {
+              "get": {
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "httpMethod": "POST",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              }
+            },
             "/api/user": {
               "post": {
                 "produces": [
@@ -361,7 +388,6 @@ Resources:
               "properties": {
                 "content": {"type": "string"},
                 "answer": {"type": "string"},
-                "answerFormat": {"type": "string"},
                 "youtube": {"type": "string"},
                 "hasSolution": {"type": "boolean"},
                 "category": {
@@ -379,14 +405,13 @@ Resources:
                 "defaultScore": {"type": "number"},
                 "defaultCount": {"type": "integer"}
               },
-              "required": ["content","answer","answerFormat","hasSolution"]
+              "required": ["content","hasSolution"]
             },
             "putQuestion": {
               "type": "object",
               "properties": {
                 "content": {"type": "string"},
                 "answer": {"type": "string"},
-                "answerFormat": {"type": "string"},
                 "youtube": {"type": "string"},
                 "hasSolution": {"type": "boolean"},
                 "category": {

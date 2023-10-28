@@ -14,7 +14,6 @@ export type Question = {
   id: string;
   content: string;
   answer: string | null;
-  answerFormat: string | null;
   youtube: string | null;
   hasSolution: boolean;
   hasImage: boolean;
@@ -37,9 +36,6 @@ export class QuestionEntity implements Question {
 
   @Column({ type: 'text', default: null })
   answer: string | null = null;
-
-  @Column({ type: 'text', name: 'answer_format', default: null })
-  answerFormat: string | null = null;
 
   @Column({ type: 'text', default: null })
   youtube: string | null = null;

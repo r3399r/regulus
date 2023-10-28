@@ -50,17 +50,18 @@ export class QuestionAccess {
     category?: string[];
     chapter?: string[];
     tag?: string[];
+    q?: string;
   }): Promise<string[]> {
     const qr = await this.database.getQueryRunner();
     const queryBuilder = qr.manager
       .createQueryBuilder(QuestionEntity.name, 'q')
       .select('q.id')
-      .innerJoin('question_category', 'qc', 'qc.question_id = q.id')
-      .innerJoin('category', 'c', 'qc.category_id = c.id')
-      .innerJoin('question_chapter', 'qc2', 'qc2.question_id = q.id')
-      .innerJoin('chapter', 'c2', 'qc2.chapter_id = c2.id')
-      .innerJoin('question_tag', 'qt', 'qt.question_id = q.id')
-      .innerJoin('tag', 't', 'qt.tag_id = t.id');
+      .leftJoin('question_category', 'qc', 'qc.question_id = q.id')
+      .leftJoin('category', 'c', 'qc.category_id = c.id')
+      .leftJoin('question_chapter', 'qc2', 'qc2.question_id = q.id')
+      .leftJoin('chapter', 'c2', 'qc2.chapter_id = c2.id')
+      .leftJoin('question_tag', 'qt', 'qt.question_id = q.id')
+      .leftJoin('tag', 't', 'qt.tag_id = t.id');
 
     if (options.category) {
       queryBuilder.where('c.name IN (:...category)', {
@@ -74,6 +75,10 @@ export class QuestionAccess {
         queryBuilder.andWhere('t.name IN (:...tag)', {
           tag: options.tag,
         });
+      if (options.q)
+        queryBuilder.andWhere('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
     } else if (options.chapter) {
       queryBuilder.where('c2.name IN (:...chapter)', {
         chapter: options.chapter,
@@ -82,10 +87,23 @@ export class QuestionAccess {
         queryBuilder.andWhere('t.name IN (:...tag)', {
           tag: options.tag,
         });
-    } else if (options.tag)
+      if (options.q)
+        queryBuilder.andWhere('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
+    } else if (options.tag) {
       queryBuilder.where('t.name IN (:...tag)', {
         tag: options.tag,
       });
+      if (options.q)
+        queryBuilder.andWhere('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
+    } else if (options.q)
+      if (options.q)
+        queryBuilder.where('lower(q.content) LIKE lower(:q)', {
+          q: `%${options.q}%`,
+        });
 
     queryBuilder.groupBy('q.id');
 

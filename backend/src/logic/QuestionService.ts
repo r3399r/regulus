@@ -90,7 +90,6 @@ export class QuestionService {
     question.id = uniqid.time();
     question.content = data.content;
     question.answer = data.answer;
-    question.answerFormat = data.answerFormat;
     question.categories = thisCategories;
     question.chapters = thisChapters;
     question.tags = thisTags;
@@ -128,14 +127,14 @@ export class QuestionService {
     const question = await this.questionAccess.findOneOrFail({ where: { id } });
 
     // delete & re-upload images
-    if (question.hasImage) {
+    if (data.image && data.image.length > 0 && question.hasImage) {
       const s3Objects = await this.awsUtil.listS3Objects(question.id);
       if (s3Objects.Contents)
         await this.awsUtil.deleteS3Objects(
           s3Objects.Contents.map((v) => v.Key ?? '').filter((v) => v !== '')
         );
     }
-    if (data.image) {
+    if (data.image && data.image.length > 0) {
       let n = 0;
       for (const i of data.image) {
         n = n + 1;
@@ -145,13 +144,12 @@ export class QuestionService {
 
     question.content = data.content ?? question.content;
     question.answer = data.answer ?? question.answer;
-    question.answerFormat = data.answerFormat ?? question.answerFormat;
     question.categories = thisCategories ?? question.categories;
     question.chapters = thisChapters ?? question.chapters;
     question.tags = thisTags ?? question.tags;
     question.youtube = data.youtube ?? question.youtube;
     question.hasSolution = data.hasSolution ?? question.hasSolution;
-    question.hasImage = data.image === undefined ? false : true;
+    question.hasImage = data.image === undefined ? question.hasImage : true;
 
     const updatedQuestion = await this.questionAccess.save(question);
 
@@ -183,8 +181,9 @@ export class QuestionService {
         res && res.accumulativeCount !== null && res.accumulativeScore !== null
           ? bn(res.accumulativeScore)
               .div(res.accumulativeCount)
-              .times(10)
-              .toFixed(2)
+              .times(5)
+              .dp(1)
+              .toNumber()
           : null;
 
       return {
@@ -197,11 +196,12 @@ export class QuestionService {
     const offset = params?.offset ? Number(params.offset) : 0;
 
     let questionIds: string[] | null = null;
-    if (params?.category || params?.chapter || params?.tag)
+    if (params?.category || params?.chapter || params?.tag || params?.q)
       questionIds = await this.questionAccess.findDistinctId({
         category: params?.category?.split(','),
         chapter: params?.chapter?.split(','),
         tag: params?.tag?.split(','),
+        q: params?.q,
       });
 
     const res = await this.questionAccess.findAndCount({
@@ -225,8 +225,9 @@ export class QuestionService {
           q.accumulativeCount !== null && q.accumulativeScore !== null
             ? bn(q.accumulativeScore)
                 .div(q.accumulativeCount)
-                .times(10)
-                .toFixed(2)
+                .times(5)
+                .dp(1)
+                .toNumber()
             : null;
 
         return { ...q, imageUrl, average };

@@ -13,6 +13,8 @@ export default async (lambdaEvent: LambdaEvent) => {
   switch (event.resource) {
     case '/api/field':
       return await defaultField();
+    case '/api/field/tag':
+      return await getTagList();
   }
   throw new BadRequestError('unexpected resource');
 };
@@ -21,6 +23,15 @@ const defaultField = async () => {
   switch (event.httpMethod) {
     case 'GET':
       return await service.getAllFields();
+  }
+
+  throw new Error('unexpected httpMethod');
+};
+
+const getTagList = async () => {
+  switch (event.httpMethod) {
+    case 'GET':
+      return await service.getTagByQuery(event.queryStringParameters);
   }
 
   throw new Error('unexpected httpMethod');

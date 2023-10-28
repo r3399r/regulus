@@ -2,13 +2,13 @@ import { Category } from './entity/CategoryEntity';
 import { Chapter } from './entity/ChapterEntity';
 import { Question } from './entity/QuestionEntity';
 import { Result } from './entity/ResultEntity';
+import { Tag } from './entity/TagEntity';
 import { User } from './entity/UserEntity';
 import { PaginationParams } from './Pagination';
 
 export type PostQuestionRequest = {
   content: string;
   answer: string;
-  answerFormat: string;
   category?: string[];
   chapter?: string[];
   tag?: string[];
@@ -24,7 +24,6 @@ export type PostQuestionResponse = Question;
 export type PutQuestionRequest = {
   content?: string;
   answer?: string;
-  answerFormat?: string;
   category?: string[];
   chapter?: string[];
   tag?: string[];
@@ -40,17 +39,24 @@ export type GetQuestionParams = PaginationParams & {
   category?: string;
   chapter?: string;
   tag?: string;
+  q?: string;
 };
 
 export type GetQuestionResponse = (Question & {
   imageUrl: string[] | null;
-  average: string | null;
+  average: number | null;
 })[];
 
 export type GetFieldResponse = {
   category: Category[];
   chapter: Chapter[];
 };
+
+export type GetTagParams = {
+  query?: string;
+};
+
+export type GetTagResponse = Tag[];
 
 export type PostUserRequest = {
   name: string;

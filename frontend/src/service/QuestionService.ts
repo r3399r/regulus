@@ -45,7 +45,6 @@ export const addNewQuestion = async (formData: QuestionForm, image?: File[]) => 
     await questionEndpoint.postQuestion({
       content: formData.content,
       answer: formData.answer,
-      answerFormat: formData.answerFormat,
       category: formData.category === '' ? undefined : formData.category.split(/[ ,]+/),
       chapter: formData.chapter === '' ? undefined : formData.chapter.split(/[ ,]+/),
       tag: formData.tag === '' ? undefined : formData.tag.split(/[ ,]+/),
@@ -66,13 +65,36 @@ export const editQuestion = async (id: string, formData: QuestionForm, image?: F
     await questionEndpoint.putQuestion(id.toLowerCase(), {
       content: formData.content,
       answer: formData.answer,
-      answerFormat: formData.answerFormat,
       category: formData.category.split(/[ ,]+/),
       chapter: formData.chapter.split(/[ ,]+/),
       tag: formData.tag === '' ? undefined : formData.tag.split(/[ ,]+/),
       youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
       hasSolution: formData.hasSolution,
       image: image ? await Promise.all(image.map((v) => file2Base64(v))) : undefined,
+    });
+  } finally {
+    dispatch(finishWaiting());
+  }
+};
+
+export const updateQuestion = async (
+  id: string,
+  params: {
+    chapter: string[];
+    category: string[];
+    tag: string;
+    youtube: string;
+    hasSolution: boolean;
+  },
+) => {
+  try {
+    dispatch(startWaiting());
+    await questionEndpoint.putQuestion(id.toLowerCase(), {
+      category: params.category,
+      chapter: params.chapter,
+      tag: params.tag === '' ? undefined : params.tag.split(/[ ,]+/),
+      youtube: params.youtube.length > 0 ? params.youtube : undefined,
+      hasSolution: params.hasSolution,
     });
   } finally {
     dispatch(finishWaiting());
