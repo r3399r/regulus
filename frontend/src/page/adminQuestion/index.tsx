@@ -72,13 +72,13 @@ const AdminQuestion = () => {
 
   return (
     <div>
-      <div className="m-2 flex items-center gap-2">
+      <div className="mx-2 my-4 flex items-center gap-2">
         <Button variant="contained" onClick={() => navigate('./edit')}>
           新增題目
         </Button>
         <div>共 {count} 題</div>
       </div>
-      <div className="m-2 flex items-center gap-2">
+      <div className="mx-2 my-4 flex items-center gap-2">
         <MultiSelect
           label="類別"
           value={filterCategory}

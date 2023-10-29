@@ -35,13 +35,11 @@ const QuestionRow = ({ question, chapterList, categoryList }: Props) => {
   return (
     <div>
       <div className="flex gap-1 p-2">
+        <div className="w-1/12">{question.id.toUpperCase()}</div>
         <div
-          className="w-1/12 cursor-pointer"
+          className="w-5/12 cursor-pointer"
           onClick={() => navigate(`/admin/question/edit?id=${question.id}`)}
         >
-          {question.id.toUpperCase()}
-        </div>
-        <div className="w-5/12">
           <div className="whitespace-pre-wrap">{question.content}</div>
           <div className="flex flex-wrap">
             {question.imageUrl?.map((o, i) => (
