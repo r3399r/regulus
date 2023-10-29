@@ -38,7 +38,7 @@ const QuestionPage = () => {
   const [page, setPage] = useState<number>(1);
   const [offset, setOffset] = useState<number>(0);
   const [count, setCount] = useState<number>(0);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<GetQuestionResponse>([]);
   const [openCategory, setOpenCategory] = useState<boolean>(false);
   const [openChapter, setOpenChapter] = useState<boolean>(false);
   const [openTag, setOpenTag] = useState<boolean>(false);
@@ -141,7 +141,7 @@ const QuestionPage = () => {
               className="flex items-center gap-1 rounded-md bg-indigo-500 py-2 pl-2 pr-4"
               onClick={() => {
                 navigate('./print', {
-                  state: { question: selected.map((v) => question.find((o) => o.id === v)) },
+                  state: { question: selected },
                 });
               }}
               disabled={selected.length === 0}
@@ -242,18 +242,23 @@ const QuestionPage = () => {
                 <div>
                   <button
                     className={classNames('py-1 pr-2 pl-3 rounded-md flex gap-1 items-center', {
-                      'bg-indigo-500 text-white': selected.includes(v.id),
-                      'bg-grey-200 text-grey-900': !selected.includes(v.id),
+                      'bg-indigo-500 text-white': selected.findIndex((o) => o.id === v.id) >= 0,
+                      'bg-grey-200 text-grey-900': selected.findIndex((o) => o.id === v.id) < 0,
                     })}
                     onClick={() => {
                       const tempSelected = [...selected];
-                      if (tempSelected.includes(v.id))
-                        setSelected(tempSelected.filter((o) => o !== v.id));
-                      else setSelected([...tempSelected, v.id]);
+                      const idx = tempSelected.findIndex((o) => o.id === v.id);
+                      if (idx >= 0) tempSelected.splice(idx, 1);
+                      else tempSelected.push(v);
+                      setSelected(tempSelected);
                     }}
                   >
                     <div className="text-sm leading-[1.5]">列印</div>
-                    <img src={selected.includes(v.id) ? IcCheckWhite : IcCheckGrey} />
+                    <img
+                      src={
+                        selected.findIndex((o) => o.id === v.id) >= 0 ? IcCheckWhite : IcCheckGrey
+                      }
+                    />
                   </button>
                 </div>
               </div>

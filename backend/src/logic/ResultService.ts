@@ -20,6 +20,9 @@ export class ResultService {
     result.questionId = data.questionId.toLowerCase();
     result.userId = data.userId;
     result.score = data.score;
+    result.examDate = data.date
+      ? new Date(data.date).toISOString()
+      : new Date().toISOString();
 
     const question = await this.questionAccess.findOneOrFail({
       where: { id: data.questionId.toLowerCase() },

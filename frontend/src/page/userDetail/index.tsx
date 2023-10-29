@@ -34,7 +34,10 @@ const UserDetail = () => {
       });
   }, [id]);
 
-  if (!user) return <></>;
+  if (!user)
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">Loading...</div>
+    );
 
   return (
     <div className="m-4 flex flex-col gap-2">
@@ -123,7 +126,9 @@ const UserDetail = () => {
               ))}
             </div>
             <div className="w-1/4">{v.score * 10}</div>
-            <div className="w-1/4">{format(new Date(v.createdAt ?? ''), 'yyyy/MM/dd')}</div>
+            <div className="w-1/4">
+              {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
+            </div>
           </div>
         ))}
       </Card>

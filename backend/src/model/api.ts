@@ -76,6 +76,7 @@ export type PostResultRequest = {
   questionId: string;
   userId: string;
   score: number;
+  date?: string;
 };
 
 export type GetUserResponse = User[];
