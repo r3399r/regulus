@@ -14,6 +14,7 @@ export type Result = {
   question: Question;
   userId: string;
   score: number;
+  examDate: string;
   createdAt: string | null;
 };
 
@@ -35,6 +36,9 @@ export class ResultEntity implements Result {
 
   @Column({ type: 'float' })
   score!: number;
+
+  @Column({ type: 'timestamp', name: 'exam_date' })
+  examDate!: string;
 
   @Column({ type: 'timestamp', name: 'created_at', default: null })
   createdAt!: string;

@@ -126,14 +126,15 @@ export class QuestionService {
 
     const question = await this.questionAccess.findOneOrFail({ where: { id } });
 
-    // delete & re-upload images
-    if (data.image && data.image.length > 0 && question.hasImage) {
+    // delete existing images
+    if (data.image === undefined || question.hasImage) {
       const s3Objects = await this.awsUtil.listS3Objects(question.id);
       if (s3Objects.Contents)
         await this.awsUtil.deleteS3Objects(
           s3Objects.Contents.map((v) => v.Key ?? '').filter((v) => v !== '')
         );
     }
+    // upload images
     if (data.image && data.image.length > 0) {
       let n = 0;
       for (const i of data.image) {
@@ -149,7 +150,7 @@ export class QuestionService {
     question.tags = thisTags ?? question.tags;
     question.youtube = data.youtube ?? question.youtube;
     question.hasSolution = data.hasSolution ?? question.hasSolution;
-    question.hasImage = data.image === undefined ? question.hasImage : true;
+    question.hasImage = data.image === undefined ? false : true;
 
     const updatedQuestion = await this.questionAccess.save(question);
 
