@@ -1,8 +1,9 @@
-import { Button, Pagination } from '@mui/material';
+import { Button, MenuItem, Pagination } from '@mui/material';
 import { MathJax } from 'better-react-mathjax';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
+import MultiSelect from 'src/component/MultiSelect';
 import useQuery from 'src/hook/useQuery';
 import { GetQuestionResponse } from 'src/model/backend/api';
 import { Category } from 'src/model/backend/entity/CategoryEntity';
@@ -18,12 +19,17 @@ const AdminQuestion = () => {
   const dispatch = useDispatch();
   const [categoryList, setCatogeryList] = useState<Category[]>();
   const [chapterList, setChapterList] = useState<Chapter[]>();
-  const { id, category, chapter, tag } = useQuery<{
+  const query = useQuery<{
     id?: string;
     category?: string;
     chapter?: string;
     tag?: string;
+    q?: string;
   }>();
+  const [filterCategory, setFilterCategory] = useState<string[]>(query.category?.split(',') ?? []);
+  const [filterChapter, setFilterChapter] = useState<string[]>(query.chapter?.split(',') ?? []);
+  const [filterTag, setFilterTag] = useState<string>(query.tag ?? '');
+  const [filterSearch, setFilterSearch] = useState<string>(query.q ?? '');
   const [question, setQuestion] = useState<GetQuestionResponse>();
   const [page, setPage] = useState<number>(1);
   const [offset, setOffset] = useState<number>(0);
@@ -39,10 +45,11 @@ const AdminQuestion = () => {
   useEffect(() => {
     setQuestion(undefined);
     getQuestionList({
-      id,
-      category,
-      chapter,
-      tag,
+      id: query.id ? query.id : undefined,
+      category: query.category ? query.category : undefined,
+      chapter: query.chapter ? query.chapter : undefined,
+      tag: query.tag ? query.tag : undefined,
+      q: query.q ? query.q : undefined,
       limit: String(DEFAULT_LIMIT),
       offset: String(offset),
     })
@@ -51,20 +58,75 @@ const AdminQuestion = () => {
         setCount(res.count);
       })
       .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
-  }, [id, category, chapter, tag, offset]);
+  }, [query, offset]);
 
   const handlePaginationChange = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
     setOffset((value - 1) * DEFAULT_LIMIT);
   };
 
-  if (!categoryList || !chapterList) return <></>;
+  if (!question || !categoryList || !chapterList)
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">Loading...</div>
+    );
 
   return (
     <div>
       <div className="m-2">
         <Button variant="contained" onClick={() => navigate('./edit')}>
           新增題目
+        </Button>
+      </div>
+      <div className="m-2 flex items-center gap-2">
+        <MultiSelect
+          label="類別"
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value as string[])}
+        >
+          {categoryList.map((o) => (
+            <MenuItem key={o.id} value={o.name}>
+              {o.name}
+            </MenuItem>
+          ))}
+        </MultiSelect>
+        <MultiSelect
+          label="章節"
+          value={filterChapter}
+          onChange={(e) => setFilterChapter(e.target.value as string[])}
+        >
+          {chapterList.map((o) => (
+            <MenuItem key={o.id} value={o.name}>
+              {o.name}
+            </MenuItem>
+          ))}
+        </MultiSelect>
+        <input
+          value={filterTag}
+          onChange={(e) => setFilterTag(e.target.value)}
+          placeholder="標籤"
+          className="rounded-md border border-grey-200 p-2"
+        />
+        <input
+          value={filterSearch}
+          onChange={(e) => setFilterSearch(e.target.value)}
+          placeholder="關鍵字"
+          className="rounded-md border border-grey-200 p-2"
+        />
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() =>
+            navigate({
+              search: createSearchParams({
+                category: filterCategory.join(),
+                chapter: filterChapter.join(),
+                tag: filterTag,
+                q: filterSearch,
+              }).toString(),
+            })
+          }
+        >
+          搜尋
         </Button>
       </div>
       <div className="h-[1px] bg-grey-900" />
@@ -80,7 +142,7 @@ const AdminQuestion = () => {
         <div className="h-[1px] bg-grey-900" />
       </div>
       <MathJax>
-        {question?.map((v) => (
+        {question.map((v) => (
           <QuestionRow
             key={v.id}
             question={v}

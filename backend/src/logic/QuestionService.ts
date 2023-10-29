@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { In } from 'typeorm';
+import { FindOptionsWhere, In, Like } from 'typeorm';
 import uniqid from 'uniqid';
 import { CategoryAccess } from 'src/access/CategoryAccess';
 import { ChapterAccess } from 'src/access/ChapterAccess';
@@ -13,7 +13,7 @@ import {
   PutQuestionRequest,
   PutQuestionResponse,
 } from 'src/model/api';
-import { QuestionEntity } from 'src/model/entity/QuestionEntity';
+import { Question, QuestionEntity } from 'src/model/entity/QuestionEntity';
 import { TagEntity } from 'src/model/entity/TagEntity';
 import { NotFoundError } from 'src/model/error';
 import { Pagination } from 'src/model/Pagination';
@@ -201,11 +201,23 @@ export class QuestionService {
         category: params?.category?.split(','),
         chapter: params?.chapter?.split(','),
         tag: params?.tag?.split(','),
-        q: params?.q,
       });
 
+    let where:
+      | FindOptionsWhere<Question>
+      | FindOptionsWhere<Question>[]
+      | undefined = undefined;
+    if (questionIds && params?.q)
+      where = [
+        { id: In(questionIds), content: Like(params.q) },
+        { id: In(questionIds), answer: Like(params.q) },
+      ];
+    else if (questionIds && !params?.q) where = { id: In(questionIds) };
+    else if (!questionIds && params?.q)
+      where = [{ content: Like(params.q) }, { answer: Like(params.q) }];
+
     const res = await this.questionAccess.findAndCount({
-      where: questionIds ? { id: In(questionIds) } : undefined,
+      where,
       order: { createdAt: 'desc' },
       take: limit,
       skip: offset,

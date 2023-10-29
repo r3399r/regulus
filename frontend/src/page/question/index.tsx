@@ -55,11 +55,11 @@ const QuestionPage = () => {
 
   useEffect(() => {
     getQuestionList({
-      id: query.id && query.id.length > 0 ? query.id : undefined,
-      category: query.category && query.category.length > 0 ? query.category : undefined,
-      chapter: query.chapter && query.chapter.length > 0 ? query.chapter : undefined,
-      tag: query.tag && query.tag.length > 0 ? query.tag : undefined,
-      q: query.q && query.q.length > 0 ? query.q : undefined,
+      id: query.id ? query.id : undefined,
+      category: query.category ? query.category : undefined,
+      chapter: query.chapter ? query.chapter : undefined,
+      tag: query.tag ? query.tag : undefined,
+      q: query.q ? query.q : undefined,
       limit: String(DEFAULT_LIMIT),
       offset: String(offset),
     })
@@ -74,6 +74,11 @@ const QuestionPage = () => {
     setPage(value);
     setOffset((value - 1) * DEFAULT_LIMIT);
   };
+
+  if (!question || !categoryList || !chapterList)
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">Loading...</div>
+    );
 
   return (
     <div>
@@ -129,7 +134,6 @@ const QuestionPage = () => {
             <button
               className="flex items-center gap-1 rounded-md bg-indigo-500 py-2 pl-2 pr-4"
               onClick={() => {
-                if (!question) return;
                 navigate('./print', {
                   state: { question: selected.map((v) => question.find((o) => o.id === v)) },
                 });
@@ -148,6 +152,7 @@ const QuestionPage = () => {
             className="cursor-pointer rounded-md bg-grey-200 px-2 py-[2px] text-xs leading-[1.5]"
             onClick={() => {
               setOffset(0);
+              setSearch('');
               navigate({ search: createSearchParams({}).toString() });
             }}
           >
@@ -164,7 +169,7 @@ const QuestionPage = () => {
       </div>
       <MathJax>
         <div className="mx-4 flex max-w-[1600px] flex-wrap gap-6 sm:mx-10 lg:mx-auto">
-          {question?.map((v) => (
+          {question.map((v) => (
             <div key={v.id} className="h-min w-full bg-white p-6 sm:w-[calc(50%-12px)]">
               <div className="mb-2 text-xs text-grey-600">ID: {v.id.toUpperCase()}</div>
               <div className="mb-2 flex flex-wrap gap-2">
@@ -257,32 +262,28 @@ const QuestionPage = () => {
           onChange={handlePaginationChange}
         />
       </div>
-      {categoryList && (
-        <ModalCategory
-          open={openCategory}
-          handleClose={() => setOpenCategory(false)}
-          category={categoryList}
-          onSubmit={(c) => {
-            setOpenCategory(false);
-            setOffset(0);
-            navigate({ search: createSearchParams({ ...query, category: c }).toString() });
-          }}
-          query={query.category}
-        />
-      )}
-      {chapterList && (
-        <ModalChapter
-          open={openChapter}
-          handleClose={() => setOpenChapter(false)}
-          chapter={chapterList}
-          onSubmit={(c) => {
-            setOpenChapter(false);
-            setOffset(0);
-            navigate({ search: createSearchParams({ ...query, chapter: c }).toString() });
-          }}
-          query={query.chapter}
-        />
-      )}
+      <ModalCategory
+        open={openCategory}
+        handleClose={() => setOpenCategory(false)}
+        category={categoryList}
+        onSubmit={(c) => {
+          setOpenCategory(false);
+          setOffset(0);
+          navigate({ search: createSearchParams({ ...query, category: c }).toString() });
+        }}
+        query={query.category}
+      />
+      <ModalChapter
+        open={openChapter}
+        handleClose={() => setOpenChapter(false)}
+        chapter={chapterList}
+        onSubmit={(c) => {
+          setOpenChapter(false);
+          setOffset(0);
+          navigate({ search: createSearchParams({ ...query, chapter: c }).toString() });
+        }}
+        query={query.chapter}
+      />
       <ModalTag
         open={openTag}
         handleClose={() => setOpenTag(false)}
