@@ -70,6 +70,11 @@ const QuestionPage = () => {
       .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
   }, [query, offset]);
 
+  const resetPagination = () => {
+    setPage(1);
+    setOffset(0);
+  };
+
   const handlePaginationChange = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
     setOffset((value - 1) * DEFAULT_LIMIT);
@@ -117,6 +122,7 @@ const QuestionPage = () => {
                 className="relative"
                 onSubmit={(e) => {
                   e.preventDefault();
+                  resetPagination();
                   navigate({ search: createSearchParams({ ...query, q: search }).toString() });
                 }}
               >
@@ -151,7 +157,7 @@ const QuestionPage = () => {
           <div
             className="cursor-pointer rounded-md bg-grey-200 px-2 py-[2px] text-xs leading-[1.5]"
             onClick={() => {
-              setOffset(0);
+              resetPagination();
               setSearch('');
               navigate({ search: createSearchParams({}).toString() });
             }}
@@ -167,7 +173,7 @@ const QuestionPage = () => {
           <div key={i}>{v}</div>
         ))}
       </div>
-      <MathJax>
+      <MathJax dynamic>
         <div className="mx-4 flex max-w-[1600px] flex-wrap gap-6 sm:mx-10 lg:mx-auto">
           {question.map((v) => (
             <div key={v.id} className="h-min w-full bg-white p-6 sm:w-[calc(50%-12px)]">
@@ -268,7 +274,7 @@ const QuestionPage = () => {
         category={categoryList}
         onSubmit={(c) => {
           setOpenCategory(false);
-          setOffset(0);
+          resetPagination();
           navigate({ search: createSearchParams({ ...query, category: c }).toString() });
         }}
         query={query.category}
@@ -279,7 +285,7 @@ const QuestionPage = () => {
         chapter={chapterList}
         onSubmit={(c) => {
           setOpenChapter(false);
-          setOffset(0);
+          resetPagination();
           navigate({ search: createSearchParams({ ...query, chapter: c }).toString() });
         }}
         query={query.chapter}
@@ -289,7 +295,7 @@ const QuestionPage = () => {
         handleClose={() => setOpenTag(false)}
         onSubmit={(t) => {
           setOpenTag(false);
-          setOffset(0);
+          resetPagination();
           navigate({ search: createSearchParams({ ...query, tag: t }).toString() });
         }}
         query={query.tag}
