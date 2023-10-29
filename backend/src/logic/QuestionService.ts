@@ -209,12 +209,15 @@ export class QuestionService {
       | undefined = undefined;
     if (questionIds && params?.q)
       where = [
-        { id: In(questionIds), content: Like(params.q) },
-        { id: In(questionIds), answer: Like(params.q) },
+        { id: In(questionIds), content: Like(`%${params.q}%`) },
+        { id: In(questionIds), answer: Like(`%${params.q}%`) },
       ];
     else if (questionIds && !params?.q) where = { id: In(questionIds) };
     else if (!questionIds && params?.q)
-      where = [{ content: Like(params.q) }, { answer: Like(params.q) }];
+      where = [
+        { content: Like(`%${params.q}%`) },
+        { answer: Like(`%${params.q}%`) },
+      ];
 
     const res = await this.questionAccess.findAndCount({
       where,
