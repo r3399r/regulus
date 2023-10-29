@@ -72,10 +72,11 @@ const AdminQuestion = () => {
 
   return (
     <div>
-      <div className="m-2">
+      <div className="m-2 flex items-center gap-2">
         <Button variant="contained" onClick={() => navigate('./edit')}>
           新增題目
         </Button>
+        <div>共 {count} 題</div>
       </div>
       <div className="m-2 flex items-center gap-2">
         <MultiSelect
@@ -130,7 +131,7 @@ const AdminQuestion = () => {
         </Button>
       </div>
       <div className="h-[1px] bg-grey-900" />
-      <div className="sticky top-0 z-10">
+      <div className="sticky top-0 z-10 bg-white">
         <div className="flex gap-1 p-2">
           <div className="w-1/12">ID</div>
           <div className="w-5/12">題目/答案</div>
