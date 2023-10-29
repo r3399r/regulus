@@ -59,7 +59,7 @@ export class UserService {
       this.userAccess.findOneOrFail({ where: { id } }),
       this.resultAccess.find({
         where: { userId: id },
-        order: { createdAt: 'desc' },
+        order: { examDate: 'desc' },
       }),
       this.categoryAccess.find({ order: { createdAt: 'asc' } }),
       this.chapterAccess.find({ order: { createdAt: 'asc' } }),
@@ -77,7 +77,7 @@ export class UserService {
         (acc, cur) => {
           const diff = differenceInCalendarDays(
             new Date(),
-            new Date(cur.createdAt ?? '')
+            new Date(cur.examDate ?? '')
           );
           const sum = bn(r).pow(diff).times(cur.score).plus(acc[0]);
           const weight = bn(r).pow(diff).plus(acc[1]);
@@ -99,7 +99,7 @@ export class UserService {
         (acc, cur) => {
           const diff = differenceInCalendarDays(
             new Date(),
-            new Date(cur.createdAt ?? '')
+            new Date(cur.examDate ?? '')
           );
           const sum = bn(r).pow(diff).times(cur.score).plus(acc[0]);
           const weight = bn(r).pow(diff).plus(acc[1]);
@@ -115,7 +115,7 @@ export class UserService {
       ...user,
       categoryScore,
       chapterScore,
-      results,
+      results: results.slice(0, 100),
     };
   }
 }
