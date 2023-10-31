@@ -198,7 +198,7 @@ const QuestionPage = () => {
               </div>
               <div className="mb-4 flex items-center gap-2 text-sm leading-[1.5]">
                 <div>難易度:</div>
-                {v.average ? (
+                {v.average !== null ? (
                   <Rating value={6 - v.average} precision={0.1} readOnly size="small" />
                 ) : (
                   <div>無資料</div>

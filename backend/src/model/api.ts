@@ -14,6 +14,7 @@ export type PostQuestionRequest = {
   tag?: string[];
   youtube?: string;
   hasSolution: boolean;
+  hasImage?: boolean;
   image?: string[];
   defaultScore?: number;
   defaultCount?: number;
@@ -29,6 +30,7 @@ export type PutQuestionRequest = {
   tag?: string[];
   youtube?: string;
   hasSolution?: boolean;
+  hasImage?: boolean;
   image?: string[];
 };
 
