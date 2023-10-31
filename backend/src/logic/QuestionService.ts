@@ -95,13 +95,13 @@ export class QuestionService {
     question.tags = thisTags;
     question.youtube = data.youtube ?? null;
     question.hasSolution = data.hasSolution;
-    question.hasImage = data.image === undefined ? false : true;
+    question.hasImage = data.hasImage ?? false;
     question.accumulativeScore = data.defaultScore ?? null;
     question.accumulativeCount = data.defaultCount?.toString() ?? null;
 
     const newQuestion = await this.questionAccess.save(question);
 
-    if (data.image) {
+    if (data.hasImage && data.image && data.image.length > 0) {
       let n = 0;
       for (const i of data.image) {
         n = n + 1;
@@ -127,7 +127,7 @@ export class QuestionService {
     const question = await this.questionAccess.findOneOrFail({ where: { id } });
 
     // delete existing images
-    if (data.image === undefined || question.hasImage) {
+    if (data.hasImage !== undefined && question.hasImage) {
       const s3Objects = await this.awsUtil.listS3Objects(question.id);
       if (s3Objects.Contents)
         await this.awsUtil.deleteS3Objects(
@@ -135,7 +135,7 @@ export class QuestionService {
         );
     }
     // upload images
-    if (data.image && data.image.length > 0) {
+    if (data.hasImage && data.image && data.image.length > 0) {
       let n = 0;
       for (const i of data.image) {
         n = n + 1;
@@ -150,7 +150,7 @@ export class QuestionService {
     question.tags = thisTags ?? question.tags;
     question.youtube = data.youtube ?? question.youtube;
     question.hasSolution = data.hasSolution ?? question.hasSolution;
-    question.hasImage = data.image === undefined ? false : true;
+    question.hasImage = data.hasImage ?? question.hasImage;
 
     const updatedQuestion = await this.questionAccess.save(question);
 

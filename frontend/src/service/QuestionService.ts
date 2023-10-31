@@ -50,6 +50,7 @@ export const addNewQuestion = async (formData: QuestionForm, image?: File[]) => 
       tag: formData.tag === '' ? undefined : formData.tag.split(/[ ,]+/),
       youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
       hasSolution: formData.hasSolution,
+      hasImage: image !== undefined,
       image: image ? await Promise.all(image.map((v) => file2Base64(v))) : undefined,
       defaultScore: formData.defaultScore === '' ? undefined : Number(formData.defaultScore),
       defaultCount: formData.defaultCount === '' ? undefined : Number(formData.defaultCount),
@@ -70,6 +71,7 @@ export const editQuestion = async (id: string, formData: QuestionForm, image?: F
       tag: formData.tag === '' ? undefined : formData.tag.split(/[ ,]+/),
       youtube: formData.youtube.length > 0 ? formData.youtube : undefined,
       hasSolution: formData.hasSolution,
+      hasImage: image !== undefined,
       image: image ? await Promise.all(image.map((v) => file2Base64(v))) : undefined,
     });
   } finally {
