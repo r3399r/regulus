@@ -176,7 +176,13 @@ const QuestionPage = () => {
       <MathJax dynamic>
         <div className="mx-4 flex max-w-[1600px] flex-wrap gap-6 sm:mx-10 lg:mx-auto">
           {question.map((v) => (
-            <div key={v.id} className="h-min w-full bg-white p-6 sm:w-[calc(50%-12px)]">
+            <div
+              key={v.id}
+              className={classNames('h-min w-full bg-white p-6 sm:w-[calc(50%-12px)] rounded-lg', {
+                'outline-indigo-500 outline outline-1':
+                  selected.findIndex((o) => o.id === v.id) >= 0,
+              })}
+            >
               <div className="mb-2 text-xs text-grey-600">ID: {v.id.toUpperCase()}</div>
               <div className="mb-2 flex flex-wrap gap-2">
                 {v.categories.map((o) => (

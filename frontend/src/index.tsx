@@ -24,6 +24,7 @@ root.render(
               degree: ['^\\circ', 0],
               vector: ['\\overset{\\small\\rightharpoonup}{#1}', 1],
               xvector: ['\\overset{\\LARGE\\rightharpoonup}{#1}', 1],
+              arc: ['\\overset{\\huge\\frown}{#1}', 1],
             },
           },
         }}

@@ -12,9 +12,9 @@ const Print = () => {
   const [display, setDisplay] = useState<boolean>(true);
   const [width, setWidth] = useState<string>('8');
   const [showId, setShowId] = useState<boolean>(false);
+  const [showNumber, setShowNumber] = useState<boolean>(true);
   const [showAnswer, setShowAnswer] = useState<boolean>(true);
   const [showBorder, setShowBorder] = useState<boolean>(true);
-  const [showNumber, setShowNumber] = useState<boolean>(false);
 
   useEffect(() => {
     setDisplay(false);
