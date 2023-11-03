@@ -60,6 +60,11 @@ const AdminQuestion = () => {
       .catch((e) => dispatch(openSnackbar({ message: e, severity: 'error' })));
   }, [query, offset]);
 
+  const resetPagination = () => {
+    setPage(1);
+    setOffset(0);
+  };
+
   const handlePaginationChange = (event: ChangeEvent<unknown>, value: number) => {
     setPage(value);
     setOffset((value - 1) * DEFAULT_LIMIT);
@@ -116,7 +121,8 @@ const AdminQuestion = () => {
         <Button
           variant="contained"
           color="success"
-          onClick={() =>
+          onClick={() => {
+            resetPagination();
             navigate({
               search: createSearchParams({
                 category: filterCategory.join(),
@@ -124,8 +130,8 @@ const AdminQuestion = () => {
                 tag: filterTag,
                 q: filterSearch,
               }).toString(),
-            })
-          }
+            });
+          }}
         >
           搜尋
         </Button>
