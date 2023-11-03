@@ -14,6 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { GetUserIdResponse } from 'src/model/backend/api';
 import { openSnackbar } from 'src/redux/uiSlice';
 import { getUserById } from 'src/service/UserService';
+import { compare } from 'src/util/compare';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip);
 
@@ -199,7 +200,7 @@ const UserDetail = () => {
             <div className="flex gap-2">
               <div className="text-[14px] leading-[1.5] text-grey-500">標籤</div>
               <div className="flex flex-1 flex-wrap gap-2">
-                {v.question.categories.map((o) => (
+                {v.question.categories.sort(compare('createdAt')).map((o) => (
                   <div
                     key={o.id}
                     className="cursor-pointer rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
@@ -208,7 +209,7 @@ const UserDetail = () => {
                     {o.name}
                   </div>
                 ))}
-                {v.question.chapters.map((o) => (
+                {v.question.chapters.sort(compare('createdAt')).map((o) => (
                   <div
                     key={o.id}
                     className="cursor-pointer rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
@@ -217,7 +218,7 @@ const UserDetail = () => {
                     {o.name}
                   </div>
                 ))}
-                {v.question.tags.map((o) => (
+                {v.question.tags.sort(compare('name')).map((o) => (
                   <div
                     key={o.id}
                     className="cursor-pointer rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
