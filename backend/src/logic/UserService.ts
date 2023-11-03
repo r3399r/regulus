@@ -51,7 +51,7 @@ export class UserService {
   }
 
   public async getUsers(): Promise<GetUserResponse> {
-    return await this.userAccess.find();
+    return await this.userAccess.find({ order: { updatedAt: 'desc' } });
   }
 
   public async getUserDetail(id: string): Promise<GetUserIdResponse> {
@@ -65,7 +65,7 @@ export class UserService {
       this.chapterAccess.find({ order: { createdAt: 'asc' } }),
     ]);
 
-    const r = 0.95;
+    const r = 0.96;
 
     const categoryScore = [];
     for (const c of categories) {
