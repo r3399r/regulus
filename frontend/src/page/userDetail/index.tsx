@@ -135,7 +135,12 @@ const UserDetail = () => {
             <div className="w-1/6 px-2 py-4">
               <div
                 className="w-fit cursor-pointer"
-                onClick={() => navigate(`/question?id=${v.questionId}`)}
+                onClick={() =>
+                  window.open(
+                    `https://blog.celestialstudio.net/posts/solution/${v.questionId}`,
+                    '_blank',
+                  )
+                }
               >
                 {v.questionId.toUpperCase()}
               </div>
@@ -187,7 +192,12 @@ const UserDetail = () => {
                 <div className="text-[14px] leading-[1.5] text-grey-500">ID</div>
                 <div
                   className="cursor-pointer text-[14px] leading-[1.5] text-grey-700"
-                  onClick={() => navigate(`/question?id=${v.questionId}`)}
+                  onClick={() =>
+                    window.open(
+                      `https://blog.celestialstudio.net/posts/solution/${v.questionId}`,
+                      '_blank',
+                    )
+                  }
                 >
                   {v.questionId.toUpperCase()}
                 </div>
