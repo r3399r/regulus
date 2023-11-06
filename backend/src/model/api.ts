@@ -83,8 +83,12 @@ export type PostResultRequest = {
 
 export type GetUserResponse = User[];
 
-export type GetUserIdResponse = User & {
-  categoryScore: { name: string; score: number }[];
-  chapterScore: { name: string; score: number }[];
+export type GetUserIdResponse = {
+  user: User;
+  timeseries: {
+    date: string;
+    category: { name: string; score: number }[];
+    chapter: { name: string; score: number }[];
+  }[];
   results: Result[];
 };
