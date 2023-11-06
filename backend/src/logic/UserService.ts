@@ -1,7 +1,6 @@
+import BN from 'bignumber.js';
 import { differenceInCalendarDays } from 'date-fns';
 import { inject, injectable } from 'inversify';
-import { CategoryAccess } from 'src/access/CategoryAccess';
-import { ChapterAccess } from 'src/access/ChapterAccess';
 import { ResultAccess } from 'src/access/ResultAccess';
 import { UserAccess } from 'src/access/UserAccess';
 import {
@@ -10,8 +9,10 @@ import {
   PostUserRequest,
   PutUserRequest,
 } from 'src/model/api';
+import { Result } from 'src/model/entity/ResultEntity';
 import { UserEntity } from 'src/model/entity/UserEntity';
 import { bn } from 'src/util/bignumber';
+import { compare } from 'src/util/compare';
 
 /**
  * Service class for User
@@ -23,12 +24,6 @@ export class UserService {
 
   @inject(ResultAccess)
   private readonly resultAccess!: ResultAccess;
-
-  @inject(CategoryAccess)
-  private readonly categoryAccess!: CategoryAccess;
-
-  @inject(ChapterAccess)
-  private readonly chapterAccess!: ChapterAccess;
 
   public async addUser(data: PostUserRequest) {
     const user = new UserEntity();
@@ -55,67 +50,80 @@ export class UserService {
   }
 
   public async getUserDetail(id: string): Promise<GetUserIdResponse> {
-    const [user, results, categories, chapters] = await Promise.all([
+    const r = 0.96;
+
+    const [user, results] = await Promise.all([
       this.userAccess.findOneOrFail({ where: { id } }),
       this.resultAccess.find({
         where: { userId: id },
         order: { examDate: 'desc' },
       }),
-      this.categoryAccess.find({ order: { createdAt: 'asc' } }),
-      this.chapterAccess.find({ order: { createdAt: 'asc' } }),
     ]);
 
-    const r = 0.96;
+    // aggregate data by examDate
+    const scoreDateMap = results.reduce((acc, cur) => {
+      const date = new Date(cur.examDate);
+      const key = date.toISOString();
+      if (acc[key] === undefined) {
+        const diff = differenceInCalendarDays(new Date(), new Date(date));
+        const weight = bn(r).pow(diff);
+        acc[key] = { date, weight, result: [] };
+      }
+      acc[key].result.push(cur);
 
-    const categoryScore = [];
-    for (const c of categories) {
-      const filtered = results.filter((v) =>
-        v.question.categories.map((o) => o.id).includes(c.id)
-      );
-      if (filtered.length === 0) continue;
-      const [sum, weight] = filtered.reduce(
-        (acc, cur) => {
-          const diff = differenceInCalendarDays(
-            new Date(),
-            new Date(cur.examDate ?? '')
-          );
-          const sum = bn(r).pow(diff).times(cur.score).plus(acc[0]);
-          const weight = bn(r).pow(diff).plus(acc[1]);
+      return acc;
+    }, {} as { [key: string]: { date: Date; weight: BN; result: Result[] } });
 
-          return [sum, weight];
-        },
-        [bn(0), bn(0)]
-      );
-      categoryScore.push({ name: c.name, score: sum.div(weight).toNumber() });
+    const scoreDate = Object.values(scoreDateMap).sort(compare('date'));
+
+    const tsResult = [];
+    const caScore = [];
+    const chScore = [];
+    for (const sd of scoreDate) {
+      for (const res of sd.result) {
+        for (const category of res.question.categories) {
+          const idx = caScore.findIndex((v) => v.name === category.name);
+          if (idx < 0)
+            caScore.push({
+              name: category.name,
+              sum: bn(res.score).times(sd.weight),
+              weight: bn(sd.weight),
+            });
+          else {
+            caScore[idx].sum = bn(res.score)
+              .times(sd.weight)
+              .plus(caScore[idx].sum);
+            caScore[idx].weight = caScore[idx].weight.plus(sd.weight);
+          }
+        }
+        for (const chapter of res.question.chapters) {
+          const idx = chScore.findIndex((v) => v.name === chapter.name);
+          if (idx < 0)
+            chScore.push({
+              name: chapter.name,
+              sum: bn(res.score).times(sd.weight),
+              weight: bn(sd.weight),
+            });
+          else {
+            chScore[idx].sum = bn(res.score)
+              .times(sd.weight)
+              .plus(chScore[idx].sum);
+            chScore[idx].weight = chScore[idx].weight.plus(sd.weight);
+          }
+        }
+      }
+
+      tsResult.push({
+        date: sd.date.toISOString(),
+        category: caScore
+          .map((v) => ({ name: v.name, score: v.sum.div(v.weight).toNumber() }))
+          .sort(compare('name')),
+        chapter: chScore
+          .map((v) => ({ name: v.name, score: v.sum.div(v.weight).toNumber() }))
+          .sort(compare('name')),
+      });
     }
 
-    const chapterScore = [];
-    for (const c of chapters) {
-      const filtered = results.filter((v) =>
-        v.question.chapters.map((o) => o.id).includes(c.id)
-      );
-      if (filtered.length === 0) continue;
-      const [sum, weight] = filtered.reduce(
-        (acc, cur) => {
-          const diff = differenceInCalendarDays(
-            new Date(),
-            new Date(cur.examDate ?? '')
-          );
-          const sum = bn(r).pow(diff).times(cur.score).plus(acc[0]);
-          const weight = bn(r).pow(diff).plus(acc[1]);
-
-          return [sum, weight];
-        },
-        [bn(0), bn(0)]
-      );
-      chapterScore.push({ name: c.name, score: sum.div(weight).toNumber() });
-    }
-
-    return {
-      ...user,
-      categoryScore,
-      chapterScore,
-      results: results.slice(0, 100),
-    };
+    return { user, timeseries: tsResult, results: results.slice(0, 100) };
   }
 }
