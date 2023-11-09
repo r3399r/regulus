@@ -76,54 +76,64 @@ export class UserService {
 
     const scoreDate = Object.values(scoreDateMap).sort(compare('date'));
 
-    const tsResult = [];
-    const caScore = [];
-    const chScore = [];
+    const timeseries = [];
+    const categoryScore = [];
+    const chapterScore = [];
     for (const sd of scoreDate) {
       for (const res of sd.result) {
         for (const category of res.question.categories) {
-          const idx = caScore.findIndex((v) => v.name === category.name);
+          const idx = categoryScore.findIndex((v) => v.name === category.name);
           if (idx < 0)
-            caScore.push({
+            categoryScore.push({
+              createdAt: category.createdAt,
               name: category.name,
               sum: bn(res.score).times(sd.weight),
               weight: bn(sd.weight),
             });
           else {
-            caScore[idx].sum = bn(res.score)
+            categoryScore[idx].sum = bn(res.score)
               .times(sd.weight)
-              .plus(caScore[idx].sum);
-            caScore[idx].weight = caScore[idx].weight.plus(sd.weight);
+              .plus(categoryScore[idx].sum);
+            categoryScore[idx].weight = categoryScore[idx].weight.plus(
+              sd.weight
+            );
           }
         }
         for (const chapter of res.question.chapters) {
-          const idx = chScore.findIndex((v) => v.name === chapter.name);
+          const idx = chapterScore.findIndex((v) => v.name === chapter.name);
           if (idx < 0)
-            chScore.push({
+            chapterScore.push({
+              createdAt: chapter.createdAt,
               name: chapter.name,
               sum: bn(res.score).times(sd.weight),
               weight: bn(sd.weight),
             });
           else {
-            chScore[idx].sum = bn(res.score)
+            chapterScore[idx].sum = bn(res.score)
               .times(sd.weight)
-              .plus(chScore[idx].sum);
-            chScore[idx].weight = chScore[idx].weight.plus(sd.weight);
+              .plus(chapterScore[idx].sum);
+            chapterScore[idx].weight = chapterScore[idx].weight.plus(sd.weight);
           }
         }
       }
 
-      tsResult.push({
+      timeseries.push({
         date: sd.date.toISOString(),
-        category: caScore
-          .map((v) => ({ name: v.name, score: v.sum.div(v.weight).toNumber() }))
-          .sort(compare('name')),
-        chapter: chScore
-          .map((v) => ({ name: v.name, score: v.sum.div(v.weight).toNumber() }))
-          .sort(compare('name')),
+        category: categoryScore
+          .sort(compare('createdAt'))
+          .map((v) => ({
+            name: v.name,
+            score: v.sum.div(v.weight).toNumber(),
+          })),
+        chapter: chapterScore
+          .sort(compare('createdAt'))
+          .map((v) => ({
+            name: v.name,
+            score: v.sum.div(v.weight).toNumber(),
+          })),
       });
     }
 
-    return { user, timeseries: tsResult, results: results.slice(0, 100) };
+    return { user, timeseries, results: results.slice(0, 100) };
   }
 }
