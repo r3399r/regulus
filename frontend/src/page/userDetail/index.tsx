@@ -15,7 +15,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { GetUserIdResponse } from 'src/model/backend/api';
 import { openSnackbar } from 'src/redux/uiSlice';
 import { getUserById } from 'src/service/UserService';
-import { compare } from 'src/util/compare';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip);
 
@@ -143,17 +142,21 @@ const UserDetail = () => {
           />
         </div>
         {ts && (
-          <div className="absolute left-1/2 top-1/2 flex w-4/5 -translate-x-1/2 -translate-y-1/2 items-center gap-4 sm:bottom-0 sm:top-auto sm:-translate-y-0">
-            <Slider
-              step={1}
-              marks
-              min={1}
-              value={currentDate}
-              max={detail.timeseries.length}
-              onChange={(e, v) => setCurrentDate(v as number)}
-            />
-            <div>{format(new Date(ts.date), 'yyyy/MM/dd')}</div>
-          </div>
+          <>
+            <div className="absolute left-1/2 top-1/2 w-4/5 -translate-x-1/2 -translate-y-1/2 gap-4 sm:bottom-0 sm:top-auto sm:-translate-y-0">
+              <Slider
+                step={1}
+                marks
+                min={1}
+                value={currentDate}
+                max={detail.timeseries.length}
+                onChange={(e, v) => setCurrentDate(v as number)}
+              />
+            </div>
+            <div className="absolute left-4 top-4 sm:left-1/2 sm:-translate-x-1/2">
+              {format(new Date(ts.date), 'yyyy/MM/dd')}
+            </div>
+          </>
         )}
       </div>
       <div className="hidden sm:block">
@@ -161,7 +164,7 @@ const UserDetail = () => {
           <div className="w-1/6 px-2 pb-2 pt-4">ID</div>
           <div className="w-3/6 px-2 pb-2 pt-4">標籤</div>
           <div className="w-1/6 px-2 pb-2 pt-4">分數(0~10)</div>
-          <div className="w-1/6 px-2 pb-2 pt-4">答題日期</div>
+          <div className="w-1/6 px-2 pb-2 pt-4">作答日期</div>
         </div>
         {detail.results.map((v) => (
           <div
@@ -182,7 +185,7 @@ const UserDetail = () => {
               </div>
             </div>
             <div className="flex w-3/6 flex-wrap gap-2 px-2 py-4">
-              {v.question.categories.sort(compare('createdAt')).map((o) => (
+              {v.question.categories.map((o) => (
                 <div
                   key={o.id}
                   className="cursor-pointer rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
@@ -191,7 +194,7 @@ const UserDetail = () => {
                   {o.name}
                 </div>
               ))}
-              {v.question.chapters.sort(compare('createdAt')).map((o) => (
+              {v.question.chapters.map((o) => (
                 <div
                   key={o.id}
                   className="cursor-pointer rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
@@ -200,7 +203,7 @@ const UserDetail = () => {
                   {o.name}
                 </div>
               ))}
-              {v.question.tags.sort(compare('name')).map((o) => (
+              {v.question.tags.map((o) => (
                 <div
                   key={o.id}
                   className="cursor-pointer rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
@@ -246,7 +249,7 @@ const UserDetail = () => {
             <div className="flex gap-2">
               <div className="text-[14px] leading-[1.5] text-grey-500">標籤</div>
               <div className="flex flex-1 flex-wrap gap-2">
-                {v.question.categories.sort(compare('createdAt')).map((o) => (
+                {v.question.categories.map((o) => (
                   <div
                     key={o.id}
                     className="cursor-pointer rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
@@ -255,7 +258,7 @@ const UserDetail = () => {
                     {o.name}
                   </div>
                 ))}
-                {v.question.chapters.sort(compare('createdAt')).map((o) => (
+                {v.question.chapters.map((o) => (
                   <div
                     key={o.id}
                     className="cursor-pointer rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
@@ -264,7 +267,7 @@ const UserDetail = () => {
                     {o.name}
                   </div>
                 ))}
-                {v.question.tags.sort(compare('name')).map((o) => (
+                {v.question.tags.map((o) => (
                   <div
                     key={o.id}
                     className="cursor-pointer rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
@@ -276,7 +279,7 @@ const UserDetail = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <div className="text-[14px] leading-[1.5] text-grey-500">答題日期</div>
+              <div className="text-[14px] leading-[1.5] text-grey-500">作答日期</div>
               <div className="text-[14px] leading-[1.5]">
                 {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
               </div>
