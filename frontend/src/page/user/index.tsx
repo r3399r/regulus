@@ -24,7 +24,7 @@ const UserPage = () => {
         <div className="w-1/4">姓名</div>
         <div className="w-1/4">Email</div>
         <div className="w-1/4">生日</div>
-        <div className="w-1/4">建立於</div>
+        <div className="w-1/4">更新於</div>
       </Card>
       {userList?.map((v) => (
         <Card key={v.id}>
@@ -33,7 +33,7 @@ const UserPage = () => {
             <div className="w-1/4">{v.email}</div>
             <div className="w-1/4">{v.birthday}</div>
             <div className="w-1/4">
-              {format(new Date(v.createdAt ?? ''), 'yyyy-MM-dd HH:mm:ss')}
+              {format(new Date(v.updatedAt ?? ''), 'yyyy-MM-dd HH:mm:ss')}
             </div>
           </div>
         </Card>

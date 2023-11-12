@@ -22,7 +22,7 @@ export class ResultService {
     result.score = data.score;
     result.examDate = data.date
       ? new Date(data.date).toISOString()
-      : new Date().toISOString();
+      : new Date().toISOString().split('T')[0] + 'T00:00:00.000Z';
 
     const question = await this.questionAccess.findOneOrFail({
       where: { id: data.questionId.toLowerCase() },
