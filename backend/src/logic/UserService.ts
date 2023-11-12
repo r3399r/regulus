@@ -119,18 +119,14 @@ export class UserService {
 
       timeseries.push({
         date: sd.date.toISOString(),
-        category: categoryScore
-          .sort(compare('createdAt'))
-          .map((v) => ({
-            name: v.name,
-            score: v.sum.div(v.weight).toNumber(),
-          })),
-        chapter: chapterScore
-          .sort(compare('createdAt'))
-          .map((v) => ({
-            name: v.name,
-            score: v.sum.div(v.weight).toNumber(),
-          })),
+        category: categoryScore.sort(compare('createdAt')).map((v) => ({
+          name: v.name,
+          score: v.sum.div(v.weight).toNumber(),
+        })),
+        chapter: chapterScore.sort(compare('createdAt')).map((v) => ({
+          name: v.name,
+          score: v.sum.div(v.weight).toNumber(),
+        })),
       });
     }
 
