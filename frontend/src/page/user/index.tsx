@@ -33,7 +33,7 @@ const UserPage = () => {
             <div className="w-1/4">{v.email}</div>
             <div className="w-1/4">{v.birthday}</div>
             <div className="w-1/4">
-              {format(new Date(v.updatedAt ?? ''), 'yyyy-MM-dd HH:mm:ss')}
+              {v.updatedAt ? format(new Date(v.updatedAt), 'yyyy-MM-dd HH:mm:ss') : '-'}
             </div>
           </div>
         </Card>
