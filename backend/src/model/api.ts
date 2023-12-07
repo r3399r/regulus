@@ -92,3 +92,12 @@ export type GetUserIdResponse = {
   }[];
   results: Result[];
 };
+
+export type PostUserIdResultRequest = {
+  date?: string;
+  result: {
+    questionId: string;
+    score: number;
+    date?: string;
+  }[];
+};
