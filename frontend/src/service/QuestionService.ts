@@ -1,6 +1,6 @@
 import fieldEndpoint from 'src/api/fieldEndpoint';
 import questionEndpoint from 'src/api/questionEndpoint';
-import { GetQuestionParams } from 'src/model/backend/api';
+import { GetFieldResponse, GetQuestionParams } from 'src/model/backend/api';
 import { QuestionForm } from 'src/model/Form';
 import { dispatch } from 'src/redux/store';
 import { finishWaiting, startWaiting } from 'src/redux/uiSlice';
@@ -9,7 +9,13 @@ import { file2Base64 } from 'src/util/fileConverter';
 export const getFields = async () => {
   try {
     dispatch(startWaiting());
+
+    const savedField = localStorage.getItem('field');
+    if (savedField) return JSON.parse(savedField) as GetFieldResponse;
+
     const res = await fieldEndpoint.getField();
+
+    localStorage.setItem('field', JSON.stringify(res.data));
 
     return res.data;
   } finally {

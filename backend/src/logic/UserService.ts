@@ -1,15 +1,17 @@
 import BN from 'bignumber.js';
 import { differenceInCalendarDays } from 'date-fns';
 import { inject, injectable } from 'inversify';
+import { QuestionAccess } from 'src/access/QuestionAccess';
 import { ResultAccess } from 'src/access/ResultAccess';
 import { UserAccess } from 'src/access/UserAccess';
 import {
   GetUserIdResponse,
   GetUserResponse,
+  PostUserIdResultRequest,
   PostUserRequest,
   PutUserRequest,
 } from 'src/model/api';
-import { Result } from 'src/model/entity/ResultEntity';
+import { Result, ResultEntity } from 'src/model/entity/ResultEntity';
 import { UserEntity } from 'src/model/entity/UserEntity';
 import { bn } from 'src/util/bignumber';
 import { compare } from 'src/util/compare';
@@ -24,6 +26,9 @@ export class UserService {
 
   @inject(ResultAccess)
   private readonly resultAccess!: ResultAccess;
+
+  @inject(QuestionAccess)
+  private readonly questionAccess!: QuestionAccess;
 
   public async addUser(data: PostUserRequest) {
     const user = new UserEntity();
@@ -131,5 +136,33 @@ export class UserService {
     }
 
     return { user, timeseries, results: results.slice(0, 100) };
+  }
+
+  public async addUserResult(id: string, data: PostUserIdResultRequest) {
+    for (const res of data.result) {
+      const result = new ResultEntity();
+      result.questionId = res.questionId.toLowerCase();
+      result.userId = id;
+      result.score = res.score;
+      result.examDate = res.date
+        ? new Date(res.date).toISOString()
+        : data.date
+        ? new Date(data.date).toISOString()
+        : new Date().toISOString().split('T')[0] + 'T00:00:00.000Z';
+
+      const question = await this.questionAccess.findOneOrFail({
+        where: { id: res.questionId.toLowerCase() },
+      });
+      question.accumulativeScore = question.accumulativeScore
+        ? question.accumulativeScore + res.score
+        : res.score;
+      const count = question.accumulativeCount
+        ? parseInt(question.accumulativeCount) + 1
+        : 1;
+      question.accumulativeCount = count.toString();
+      await this.questionAccess.save(question);
+
+      await this.resultAccess.save(result);
+    }
   }
 }

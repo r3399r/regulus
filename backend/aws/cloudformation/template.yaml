@@ -15,7 +15,7 @@ Parameters:
     Type: String
   Domain:
     Type: String
-Conditions: 
+Conditions:
   IsProd: !Equals [ !Ref TargetEnvr, prod ]
 Resources:
   ##########################################
@@ -339,6 +339,44 @@ Resources:
                 }
               }
             },
+            "/api/user/{id}/result": {
+              "post": {
+                "produces": [
+                  "application/json"
+                ],
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/postUserIdResult"
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-request-validator" : "Validate body, query string parameters, and headers",
+                "x-amazon-apigateway-integration": {
+                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:278497686406:function:${Project}-${TargetEnvr}-lambda/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "httpMethod": "POST",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              }
+            },
             "/api/result": {
               "post": {
                 "produces": [
@@ -456,6 +494,25 @@ Resources:
                 "date": {"type": "string"}
               },
               "required": ["questionId","userId","score"]
+            },
+            "postUserIdResult": {
+              "type": "object",
+              "properties": {
+                "date": {"type": "string"},
+                "result": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "questionId": {"type": "string"},
+                      "score": {"type": "number", "minimum": 0, "maximum": 1},
+                      "date": {"type": "string"}
+                    },
+                    "required": ["questionId","score"]
+                  }
+                }
+              },
+              "required": ["result"]
             }
           },
           "x-amazon-apigateway-request-validators" : {
