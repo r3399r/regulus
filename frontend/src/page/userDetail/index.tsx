@@ -174,14 +174,12 @@ const UserDetail = () => {
             <div className="w-1/6 px-2 py-4">
               <div
                 className="w-fit cursor-pointer"
-                onClick={() => {
-                  if (v.question.hasSolution)
-                    window.open(
-                      `https://blog.celestialstudio.net/posts/solution/${v.questionId}`,
-                      '_blank',
-                    );
-                  else navigate(`/question?id=${v.questionId}`);
-                }}
+                onClick={() =>
+                  window.open(
+                    `https://blog.celestialstudio.net/posts/solution/${v.questionId}`,
+                    '_blank',
+                  )
+                }
               >
                 {v.questionId.toUpperCase()}
               </div>
