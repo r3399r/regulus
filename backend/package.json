@@ -23,7 +23,6 @@
     "file-type": "^16.5.3",
     "inversify": "^6.0.1",
     "pg": "^8.8.0",
-    "pg-native": "^3.0.1",
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.4.1",
     "typeorm": "^0.3.11",
