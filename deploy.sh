@@ -36,7 +36,7 @@ echo ===========================================================================
 
 echo prepare frontend files...
 rm -rf ../frontend/src/model/backend
-cp -R lib/src/model ../frontend/src/model/backend
+cp -R lib/src/model ../frontend-backstage/src/model/backend
 # cp -R lib/src/constant ../frontend/src/constant/backend
 echo ====================================================================================
 
@@ -47,7 +47,7 @@ echo ===========================================================================
 # echo ====================================================================================
 
 echo deploy frontend to S3...
-cd ../frontend
+cd ../frontend-backstage
 npm i
 npm run build
 # mkdir -p ./dist/doc
