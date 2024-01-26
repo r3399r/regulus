@@ -1,5 +1,5 @@
 {
-  "name": "regulus-frontend",
+  "name": "regulus-frontend-backstage",
   "version": "1.0.9",
   "private": true,
   "scripts": {
