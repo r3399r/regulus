@@ -36,21 +36,19 @@ echo ===========================================================================
 
 echo prepare frontend files...
 rm -rf ../frontend/src/model/backend
-cp -R lib/src/model ../frontend-backstage/src/model/backend
-# cp -R lib/src/constant ../frontend/src/constant/backend
+cp -R lib/src/model ../frontend-console/src/model/backend
 echo ====================================================================================
 
-# echo prepare api document...
-# cd ../doc
-# # npm ci
-# npm run tsoa -- $env
-# echo ====================================================================================
+echo deploy frontend-console to S3...
+cd ../frontend-console
+npm i
+npm run pre:deploy
+aws s3 sync ./dist s3://$project-$env-console --delete --cache-control no-cache
+echo ====================================================================================
 
-echo deploy frontend to S3...
-cd ../frontend-backstage
+echo deploy frontend-landing to S3...
+cd ../frontend-landing
 npm i
 npm run build
-# mkdir -p ./dist/doc
-# cp -R ../doc/index.* ./dist/doc
-aws s3 sync ./dist s3://$project-$env --delete --cache-control no-cache
+aws s3 sync ./out s3://$project-$env-landing --delete --cache-control no-cache
 echo ====================================================================================
