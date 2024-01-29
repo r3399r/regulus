@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  color: theme(colors.grey.900);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+}

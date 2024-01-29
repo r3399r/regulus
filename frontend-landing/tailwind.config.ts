@@ -19,6 +19,9 @@ const config: Config = {
         700: '#5f5f5f',
         900: '#2a2a2a',
       },
+      pastelgrey: {
+        50: '#f6f6f3',
+      },
       rose: {
         100: '#fbe7e3',
         900: '#8e211a',
@@ -32,13 +35,16 @@ const config: Config = {
         900: '#0f542f',
       },
       indigo: {
+        300: '#7885fc',
         500: '#483be7',
+      },
+      jade: {
+        100: '#c7e8da',
       },
     },
     screens: {
       sm: '768px',
       md: '1024px',
-      lg: '1400px',
     },
   },
 };
