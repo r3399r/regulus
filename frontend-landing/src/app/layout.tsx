@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'XXX',
-  description: 'XXX',
+  title: 'Regulus Home',
+  description: 'Regulus Home Description',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
