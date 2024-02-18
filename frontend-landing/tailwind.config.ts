@@ -21,6 +21,7 @@ const config: Config = {
       },
       pastelgrey: {
         50: '#f6f6f3',
+        100: '#f0efeb',
       },
       rose: {
         100: '#fbe7e3',
