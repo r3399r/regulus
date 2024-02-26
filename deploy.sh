@@ -21,34 +21,20 @@ echo ===========================================================================
 # psql postgresql://$user:$pwd@$host:26257/$cluster.$project -f deploy.sql
 # echo ====================================================================================
 
-echo deploy backend AWS...
-cd ./backend
-npm install
-npm run clean
-npm install --production
-mkdir -p dist/nodejs
-cp -R node_modules dist/nodejs
-npm install
-npm run compile # lambda
-aws cloudformation package --template-file aws/cloudformation/template.yaml --output-template-file packaged.yaml --s3-bucket y-cf-midway-singapore
-aws cloudformation deploy --template-file packaged.yaml --stack-name $project-$env-stack --parameter-overrides TargetEnvr=$env Project=$project SubDomain=$subDomain Domain=$domain --no-fail-on-empty-changeset --s3-bucket y-cf-midway-singapore --capabilities CAPABILITY_NAMED_IAM
-echo ====================================================================================
+echo install dependencies...
+docker-compose -f docker-compose.builder.yml run --rm install
 
-echo prepare frontend files...
-rm -rf ../frontend/src/model/backend
-cp -R lib/src/model ../frontend-console/src/model/backend
+echo deploy backend AWS...
+docker-compose -f docker-compose.builder.yml run --rm prepare-layers
+aws cloudformation deploy --template-file backend/packaged.yaml --stack-name $project-$env-stack --parameter-overrides TargetEnvr=$env Project=$project SubDomain=$subDomain Domain=$domain --no-fail-on-empty-changeset --s3-bucket y-cf-midway-singapore --capabilities CAPABILITY_NAMED_IAM
 echo ====================================================================================
 
 echo deploy frontend-console to S3...
-cd ../frontend-console
-npm i
-npm run pre:deploy
-aws s3 sync ./dist s3://$project-$env-console --delete --cache-control no-cache
+docker-compose -f docker-compose.builder.yml run --rm prepare-console
+aws s3 sync ./frontend-console/dist s3://$project-$env-console --delete --cache-control no-cache
 echo ====================================================================================
 
-echo deploy frontend-landing to S3...
-cd ../frontend-landing
-npm i
-npm run build
+echo deploy frontend-console to S3...
+docker-compose -f docker-compose.builder.yml run --rm prepare-landing
 aws s3 sync ./out s3://$project-$env-landing --delete --cache-control no-cache
 echo ====================================================================================

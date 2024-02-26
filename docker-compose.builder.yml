@@ -1,0 +1,50 @@
+version: '2'
+services:
+  base:
+    image: sleavely/node-awscli:18.x
+    volumes:
+      - .:/usr/src/app
+      - $HOME/.aws/credentials:/root/.aws/credentials:ro
+    working_dir: /usr/src/app
+    network_mode: host
+  install:
+    extends:
+      service: base
+    command: npm install
+  compile:
+    extends:
+      service: base
+    command: >
+      bash -c "cd backend
+      && npm install
+      && npm run compile
+      && rm -rf ../frontend-console/src/model/backend
+      && cp -R lib/src/model ../frontend-console/src/model/backend"
+  prepare-layers:
+    extends:
+      service: base
+    command: >
+      bash -c "cd backend
+      && npm install
+      && npm run clean
+      && npm install --production
+      && mkdir -p dist/nodejs
+      && cp -R node_modules dist/nodejs
+      && npm install
+      && npm run compile
+      && aws cloudformation package --template-file aws/cloudformation/template.yaml --output-template-file packaged.yaml --s3-bucket y-cf-midway-singapore"
+  prepare-console:
+    extends:
+      service: base
+    command: >
+      bash -c "cd frontend-console
+      && npm install
+      && npm run pre:deploy"
+  prepare-landing:
+    extends:
+      service: base
+    command: >
+      bash -c "cd frontend-landing
+      && npm install
+      && npm run build"
+
