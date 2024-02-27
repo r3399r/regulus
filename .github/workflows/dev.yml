@@ -34,5 +34,3 @@ jobs:
       - name: Deploy to dev environment
         run: |
           sh deploy.sh test
-        env:
-          AWS_EC2_METADATA_DISABLED: true

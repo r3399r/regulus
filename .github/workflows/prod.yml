@@ -34,5 +34,3 @@ jobs:
       - name: Deploy to production environment
         run: |
           sh deploy.sh prod
-        env:
-          AWS_EC2_METADATA_DISABLED: true
