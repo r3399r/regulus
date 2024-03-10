@@ -23,6 +23,7 @@ echo ===========================================================================
 
 echo install dependencies...
 docker-compose -f docker-compose.builder.yml run --rm install
+docker-compose -f docker-compose.builder.yml run --rm compile
 echo ====================================================================================
 
 echo deploy backend AWS...
