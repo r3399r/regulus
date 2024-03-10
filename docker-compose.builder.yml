@@ -17,6 +17,7 @@ services:
       service: base
     command: >
       bash -c "cd backend
+      && env
       && npm install
       && npm run compile
       && rm -rf ../frontend-console/src/model/backend
