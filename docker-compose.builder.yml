@@ -21,7 +21,8 @@ services:
       && npm install
       && npm run compile
       && rm -rf ../frontend-console/src/model/backend
-      && cp -R lib/src/model ../frontend-console/src/model/backend"
+      && cp -R lib/src/model ../frontend-console/src/model/backend
+      && aws configure list"
   prepare-layers:
     extends:
       service: base
