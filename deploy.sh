@@ -5,7 +5,6 @@ env=$1
 project=regulus
 subDomain=yoho
 domain=celestialstudio.net
-AWS_EC2_METADATA_DISABLED=true
 
 echo ====================================================================================
 echo env: $env
