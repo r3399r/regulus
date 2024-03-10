@@ -40,5 +40,4 @@ jobs:
       # Runs a single command using the runners shell
       - name: Deploy to dev environment
         run: |
-          aws configure list
           sh deploy.sh test
