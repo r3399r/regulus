@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   base:
     image: sleavely/node-awscli:18.x
