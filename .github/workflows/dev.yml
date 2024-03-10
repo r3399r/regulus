@@ -26,10 +26,10 @@ jobs:
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v2.0
         with:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-southeast-1
-          AWS_EC2_METADATA_DISABLED: true
+          envkey_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          envkey_AWS_DEFAULT_REGION: ap-southeast-1
+          envkey_AWS_EC2_METADATA_DISABLED: true          
 
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
