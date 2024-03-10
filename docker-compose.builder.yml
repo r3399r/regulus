@@ -49,4 +49,3 @@ services:
       bash -c "cd frontend-landing
       && npm install
       && npm run build"
-

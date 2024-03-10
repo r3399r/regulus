@@ -23,6 +23,7 @@ echo ===========================================================================
 
 echo install dependencies...
 docker-compose -f docker-compose.builder.yml run --rm install
+echo ====================================================================================
 
 echo deploy backend AWS...
 docker-compose -f docker-compose.builder.yml run --rm prepare-layers
@@ -34,7 +35,7 @@ docker-compose -f docker-compose.builder.yml run --rm prepare-console
 aws s3 sync ./frontend-console/dist s3://$project-$env-console --delete --cache-control no-cache
 echo ====================================================================================
 
-echo deploy frontend-console to S3...
+echo deploy frontend-landing to S3...
 docker-compose -f docker-compose.builder.yml run --rm prepare-landing
-aws s3 sync ./out s3://$project-$env-landing --delete --cache-control no-cache
+aws s3 sync ./frontend-landing/out s3://$project-$env-landing --delete --cache-control no-cache
 echo ====================================================================================
