@@ -1,9 +1,9 @@
 {
   "name": "regulus-frontend",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
-    "start": "cross-env BROWSER=none PORT=3000 react-scripts start",
+    "start": "cross-env BROWSER=none PORT=3001 react-scripts start",
     "build": "cross-env BUILD_PATH='./dist' react-scripts build",
     "test": "react-scripts test --coverage",
     "test:nowatch": "npm run test -- --watchAll=false",
@@ -15,7 +15,8 @@
     "lint": "run-s lint:*",
     "fix": "run-s fix:*",
     "clean": "del-cli dist -f",
-    "pre:commit": "npm run lint"
+    "pre:commit": "npm run lint",
+    "pre:deploy": "run-s clean build"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
