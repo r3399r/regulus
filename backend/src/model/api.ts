@@ -79,7 +79,7 @@ export type PostResultRequest = {
   userId: string;
   score: number;
   date?: string;
-};
+}[];
 
 export type GetUserResponse = User[];
 
