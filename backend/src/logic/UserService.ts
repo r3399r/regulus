@@ -135,7 +135,22 @@ export class UserService {
       });
     }
 
-    return { user, timeseries, results: results.slice(0, 100) };
+    return {
+      user,
+      timeseries,
+      results: results.slice(0, 100).map((v) => ({
+        ...v,
+        difficulty:
+          v.question.accumulativeCount !== null &&
+          v.question.accumulativeScore !== null
+            ? bn(v.question.accumulativeScore)
+                .div(v.question.accumulativeCount)
+                .times(5)
+                .dp(1)
+                .toNumber()
+            : null,
+      })),
+    };
   }
 
   public async addUserResult(id: string, data: PostUserIdResultRequest) {

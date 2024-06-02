@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import AdminQuestion from './page/adminQuestion';
 import AdminQuestionEdit from './page/adminQuestionEdit';
 import Print from './page/print';
@@ -16,7 +16,6 @@ const AppRoutes = () => (
     <Route path="/admin/question/edit" element={<AdminQuestionEdit />} />
     <Route path="/admin/user" element={<User />} />
     <Route path="/admin/result" element={<Result />} />
-    <Route path="/*" element={<Navigate to="/question" />} />
   </Routes>
 );
 

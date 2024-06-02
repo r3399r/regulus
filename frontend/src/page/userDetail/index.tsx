@@ -1,4 +1,5 @@
-import { Slider } from '@mui/material';
+import { Rating, Slider } from '@mui/material';
+import { MathJax } from 'better-react-mathjax';
 import {
   Chart as ChartJS,
   Filler,
@@ -11,7 +12,7 @@ import { format } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { Radar } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { GetUserIdResponse } from 'src/model/backend/api';
 import { openSnackbar } from 'src/redux/uiSlice';
 import { getUserById } from 'src/service/UserService';
@@ -20,7 +21,6 @@ ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip);
 
 const UserDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [detail, setDetail] = useState<GetUserIdResponse>();
   const [currentDate, setCurrentDate] = useState<number>();
@@ -52,7 +52,6 @@ const UserDetail = () => {
       })
       .catch(() => {
         dispatch(openSnackbar({ message: 'invalid user id', severity: 'error' }));
-        navigate('question');
       });
   }, [id]);
 
@@ -159,101 +158,96 @@ const UserDetail = () => {
           </>
         )}
       </div>
-      <div className="hidden sm:block">
-        <div className="flex border-b border-solid border-grey-700 text-[14px] leading-[1.5] text-grey-500">
-          <div className="w-1/6 px-2 pb-2 pt-4">ID</div>
-          <div className="w-3/6 px-2 pb-2 pt-4">標籤</div>
-          <div className="w-1/6 px-2 pb-2 pt-4">分數(0~10)</div>
-          <div className="w-1/6 px-2 pb-2 pt-4">作答日期</div>
-        </div>
-        {detail.results.map((v) => (
-          <div
-            key={v.id}
-            className="flex border-b border-solid border-grey-300 text-[14px] leading-[1.5]"
-          >
-            <div className="w-1/6 px-2 py-4">
-              <div
-                className="w-fit cursor-pointer"
-                onClick={() =>
-                  window.open(
-                    `https://blog.celestialstudio.net/posts/solution/${v.questionId}`,
-                    '_blank',
-                  )
-                }
-              >
-                {v.questionId.toUpperCase()}
-              </div>
-            </div>
-            <div className="flex w-3/6 flex-wrap gap-2 px-2 py-4">
-              {v.question.categories.map((o) => (
-                <div
-                  key={o.id}
-                  className="cursor-pointer rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
-                  onClick={() => navigate(`/question?category=${o.name}`)}
-                >
-                  {o.name}
-                </div>
-              ))}
-              {v.question.chapters.map((o) => (
-                <div
-                  key={o.id}
-                  className="cursor-pointer rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
-                  onClick={() => navigate(`/question?chapter=${o.name}`)}
-                >
-                  {o.name}
-                </div>
-              ))}
-              {v.question.tags.map((o) => (
-                <div
-                  key={o.id}
-                  className="cursor-pointer rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
-                  onClick={() => navigate(`/question?tag=${o.name}`)}
-                >
-                  {o.name}
-                </div>
-              ))}
-            </div>
-            <div className="w-1/6 px-2 py-4">{v.score * 10}</div>
-            <div className="w-1/6 px-2 py-4">
-              {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
-            </div>
+      <MathJax dynamic>
+        <div className="hidden sm:block">
+          <div className="flex border-b border-solid border-grey-700 text-[14px] leading-[1.5] text-grey-500">
+            <div className="w-2/12 px-2 pb-2 pt-4">ID</div>
+            <div className="w-2/12 px-2 pb-2 pt-4">作答日期</div>
+            <div className="w-1/12 px-2 pb-2 pt-4">分數(0~10)</div>
+            <div className="w-7/12 px-2 pb-2 pt-4">內容</div>
           </div>
-        ))}
-      </div>
-      <div className="border-t border-solid border-grey-700 sm:hidden">
-        {detail.results.map((v) => (
-          <div
-            key={v.id}
-            className="flex flex-col gap-4 border-b border-solid border-grey-300 pb-4 pt-6"
-          >
-            <div className="flex">
-              <div className="flex w-1/2 gap-2">
-                <div className="text-[14px] leading-[1.5] text-grey-500">ID</div>
-                <div
-                  className="cursor-pointer text-[14px] leading-[1.5] text-grey-700"
-                  onClick={() =>
-                    window.open(
-                      `https://blog.celestialstudio.net/posts/solution/${v.questionId}`,
-                      '_blank',
-                    )
-                  }
-                >
-                  {v.questionId.toUpperCase()}
-                </div>
+          {detail.results.map((v) => (
+            <div
+              key={v.id}
+              className="flex border-b border-solid border-grey-300 text-[14px] leading-[1.5]"
+            >
+              <div className="w-2/12 px-2 py-4">{v.questionId.toUpperCase()}</div>
+              <div className="w-2/12 px-2 py-4">
+                {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
               </div>
-              <div className="flex w-1/2 gap-2">
-                <div className="text-[14px] leading-[1.5] text-grey-500">分數(0~10)</div>
-                <div className="text-[14px] leading-[1.5]">{v.score * 10}</div>
+              <div className="w-1/12 px-2 py-4">{v.score * 10}</div>
+              <div className="w-7/12 px-2 py-4">
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {v.question.categories.map((o) => (
+                    <div
+                      key={o.id}
+                      className="rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
+                    >
+                      {o.name}
+                    </div>
+                  ))}
+                  {v.question.chapters.map((o) => (
+                    <div
+                      key={o.id}
+                      className="rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
+                    >
+                      {o.name}
+                    </div>
+                  ))}
+                </div>
+                <div className="mb-4 flex items-center gap-2 text-sm leading-[1.5] text-grey-600">
+                  <div>難易度:</div>
+                  {v.difficulty !== null ? (
+                    <Rating value={5 - (4 / 5) * v.difficulty} readOnly size="small" />
+                  ) : (
+                    <div>無資料</div>
+                  )}
+                </div>
+                <div className="whitespace-pre-wrap">{v.question.content}</div>
+                <div className="mt-4">Ans: {v.question.answer}</div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <div className="text-[14px] leading-[1.5] text-grey-500">標籤</div>
+          ))}
+        </div>
+        <div className="border-t border-solid border-grey-700 sm:hidden">
+          {detail.results.map((v) => (
+            <div
+              key={v.id}
+              className="flex flex-col gap-4 border-b border-solid border-grey-300 pb-4 pt-6"
+            >
+              <div className="flex">
+                <div className="flex w-1/2 gap-2">
+                  <div className="text-[14px] leading-[1.5] text-grey-500">ID</div>
+                  <div className="text-[14px] leading-[1.5] text-grey-700">
+                    {v.questionId.toUpperCase()}
+                  </div>
+                </div>
+                <div className="flex w-1/2 gap-2">
+                  <div className="text-[14px] leading-[1.5] text-grey-500">作答日期</div>
+                  <div className="text-[14px] leading-[1.5]">
+                    {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex">
+                <div className="flex w-1/2 gap-2">
+                  <div className="text-[14px] leading-[1.5] text-grey-500">分數(0~10)</div>
+                  <div className="text-[14px] leading-[1.5]">{v.score * 10}</div>
+                </div>
+                <div className="flex w-1/2 gap-2">
+                  <div className="text-[14px] leading-[1.5] text-grey-500">難易度</div>
+                  {v.difficulty !== null ? (
+                    <Rating value={5 - (4 / 5) * v.difficulty} readOnly size="small" />
+                  ) : (
+                    <div>無資料</div>
+                  )}
+                </div>
+              </div>
               <div className="flex flex-1 flex-wrap gap-2">
                 {v.question.categories.map((o) => (
                   <div
                     key={o.id}
-                    className="cursor-pointer rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
-                    onClick={() => navigate(`/question?category=${o.name}`)}
+                    className="rounded-[30px] bg-rose-100 px-3 py-[2px] text-xs leading-[1.5] text-rose-900"
                   >
                     {o.name}
                   </div>
@@ -261,32 +255,18 @@ const UserDetail = () => {
                 {v.question.chapters.map((o) => (
                   <div
                     key={o.id}
-                    className="cursor-pointer rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
-                    onClick={() => navigate(`/question?chapter=${o.name}`)}
-                  >
-                    {o.name}
-                  </div>
-                ))}
-                {v.question.tags.map((o) => (
-                  <div
-                    key={o.id}
-                    className="cursor-pointer rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
-                    onClick={() => navigate(`/question?tag=${o.name}`)}
+                    className="rounded-[30px] bg-skyblue-100 px-3 py-[2px] text-xs leading-[1.5] text-skyblue-900"
                   >
                     {o.name}
                   </div>
                 ))}
               </div>
+              <div className="whitespace-pre-wrap">{v.question.content}</div>
+              <div>Ans: {v.question.answer}</div>
             </div>
-            <div className="flex gap-2">
-              <div className="text-[14px] leading-[1.5] text-grey-500">作答日期</div>
-              <div className="text-[14px] leading-[1.5]">
-                {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </MathJax>
     </div>
   );
 };
