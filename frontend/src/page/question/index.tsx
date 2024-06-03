@@ -201,11 +201,19 @@ const QuestionPage = () => {
                     {o.name}
                   </div>
                 ))}
+                {v.tags.map((o) => (
+                  <div
+                    key={o.id}
+                    className="rounded-[30px] bg-grass-100 px-3 py-[2px] text-xs leading-[1.5] text-grass-900"
+                  >
+                    {o.name}
+                  </div>
+                ))}
               </div>
               <div className="mb-4 flex items-center gap-2 text-sm leading-[1.5] text-grey-600">
                 <div>難易度:</div>
-                {v.average !== null ? (
-                  <Rating value={5 - (4 / 5) * v.average} readOnly size="small" />
+                {v.difficulty !== null ? (
+                  <Rating value={5 - (4 / 5) * v.difficulty} readOnly size="small" />
                 ) : (
                   <div>無資料</div>
                 )}

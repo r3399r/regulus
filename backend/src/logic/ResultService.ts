@@ -16,26 +16,28 @@ export class ResultService {
   private readonly questionAccess!: QuestionAccess;
 
   public async addResult(data: PostResultRequest) {
-    const result = new ResultEntity();
-    result.questionId = data.questionId.toLowerCase();
-    result.userId = data.userId;
-    result.score = data.score;
-    result.examDate = data.date
-      ? new Date(data.date).toISOString()
-      : new Date().toISOString().split('T')[0] + 'T00:00:00.000Z';
+    for (const res of data) {
+      const result = new ResultEntity();
+      result.questionId = res.questionId.toLowerCase();
+      result.userId = res.userId;
+      result.score = res.score;
+      result.examDate = res.date
+        ? new Date(res.date).toISOString()
+        : new Date().toISOString().split('T')[0] + 'T00:00:00.000Z';
 
-    const question = await this.questionAccess.findOneOrFail({
-      where: { id: data.questionId.toLowerCase() },
-    });
-    question.accumulativeScore = question.accumulativeScore
-      ? question.accumulativeScore + data.score
-      : data.score;
-    const count = question.accumulativeCount
-      ? parseInt(question.accumulativeCount) + 1
-      : 1;
-    question.accumulativeCount = count.toString();
-    await this.questionAccess.save(question);
+      const question = await this.questionAccess.findOneOrFail({
+        where: { id: res.questionId.toLowerCase() },
+      });
+      question.accumulativeScore = question.accumulativeScore
+        ? question.accumulativeScore + res.score
+        : res.score;
+      const count = question.accumulativeCount
+        ? parseInt(question.accumulativeCount) + 1
+        : 1;
+      question.accumulativeCount = count.toString();
 
-    return await this.resultAccess.save(result);
+      await this.questionAccess.save(question);
+      await this.resultAccess.save(result);
+    }
   }
 }

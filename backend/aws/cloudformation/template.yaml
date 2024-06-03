@@ -486,14 +486,17 @@ Resources:
               }
             },
             "postResult": {
-              "type": "object",
-              "properties": {
-                "questionId": {"type": "string"},
-                "userId": {"type": "string"},
-                "score": {"type": "number", "minimum": 0, "maximum": 1},
-                "date": {"type": "string"}
-              },
-              "required": ["questionId","userId","score"]
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "questionId": {"type": "string"},
+                  "userId": {"type": "string"},
+                  "score": {"type": "number", "minimum": 0, "maximum": 1},
+                  "date": {"type": "string"}
+                },
+                "required": ["questionId","userId","score"]
+              }
             },
             "postUserIdResult": {
               "type": "object",

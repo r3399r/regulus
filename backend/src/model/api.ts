@@ -46,7 +46,7 @@ export type GetQuestionParams = PaginationParams & {
 
 export type GetQuestionResponse = (Question & {
   imageUrl: string[] | null;
-  average: number | null;
+  difficulty: number | null;
 })[];
 
 export type GetFieldResponse = {
@@ -79,7 +79,7 @@ export type PostResultRequest = {
   userId: string;
   score: number;
   date?: string;
-};
+}[];
 
 export type GetUserResponse = User[];
 
@@ -90,7 +90,9 @@ export type GetUserIdResponse = {
     category: { name: string; score: number }[];
     chapter: { name: string; score: number }[];
   }[];
-  results: Result[];
+  results: (Result & {
+    difficulty: number | null;
+  })[];
 };
 
 export type PostUserIdResultRequest = {

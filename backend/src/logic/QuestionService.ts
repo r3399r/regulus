@@ -178,7 +178,7 @@ export class QuestionService {
             v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
           ).filter((v) => v !== '');
       }
-      const average =
+      const difficulty =
         res && res.accumulativeCount !== null && res.accumulativeScore !== null
           ? bn(res.accumulativeScore)
               .div(res.accumulativeCount)
@@ -188,7 +188,7 @@ export class QuestionService {
           : null;
 
       return {
-        data: res ? [{ ...res, imageUrl, average }] : [],
+        data: res ? [{ ...res, imageUrl, difficulty }] : [],
         paginate: { limit: 0, offset: 0, count: res ? 1 : 0 },
       };
     }
@@ -237,7 +237,7 @@ export class QuestionService {
               v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
             ).filter((v) => v !== '');
         }
-        const average =
+        const difficulty =
           q.accumulativeCount !== null && q.accumulativeScore !== null
             ? bn(q.accumulativeScore)
                 .div(q.accumulativeCount)
@@ -246,7 +246,7 @@ export class QuestionService {
                 .toNumber()
             : null;
 
-        return { ...q, imageUrl, average };
+        return { ...q, imageUrl, difficulty };
       })
     );
 
