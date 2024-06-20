@@ -15,6 +15,7 @@ import { Result, ResultEntity } from 'src/model/entity/ResultEntity';
 import { UserEntity } from 'src/model/entity/UserEntity';
 import { bn } from 'src/util/bignumber';
 import { compare } from 'src/util/compare';
+import { QuestionService } from './QuestionService';
 
 /**
  * Service class for User
@@ -26,6 +27,9 @@ export class UserService {
 
   @inject(ResultAccess)
   private readonly resultAccess!: ResultAccess;
+
+  @inject(QuestionService)
+  private readonly questionService!: QuestionService;
 
   @inject(QuestionAccess)
   private readonly questionAccess!: QuestionAccess;
@@ -143,11 +147,10 @@ export class UserService {
         difficulty:
           v.question.accumulativeCount !== null &&
           v.question.accumulativeScore !== null
-            ? bn(v.question.accumulativeScore)
-                .div(v.question.accumulativeCount)
-                .times(5)
-                .dp(1)
-                .toNumber()
+            ? this.questionService.calculateDifficulty(
+                v.question.accumulativeScore,
+                v.question.accumulativeCount
+              )
             : null,
       })),
     };

@@ -492,7 +492,7 @@ Resources:
                 "properties": {
                   "questionId": {"type": "string"},
                   "userId": {"type": "string"},
-                  "score": {"type": "number", "minimum": 0, "maximum": 1},
+                  "score": {"type": "number", "minimum": 0, "maximum": 10},
                   "date": {"type": "string"}
                 },
                 "required": ["questionId","userId","score"]
@@ -508,7 +508,7 @@ Resources:
                     "type": "object",
                     "properties": {
                       "questionId": {"type": "string"},
-                      "score": {"type": "number", "minimum": 0, "maximum": 1},
+                      "score": {"type": "number", "minimum": 0, "maximum": 10},
                       "date": {"type": "string"}
                     },
                     "required": ["questionId","score"]

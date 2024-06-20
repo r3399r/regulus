@@ -37,9 +37,9 @@ const UserDetail = () => {
 
     return [
       ts.category.map((v) => v.name),
-      ts.category.map((v) => v.score * 10),
+      ts.category.map((v) => v.score),
       ts.chapter.map((v) => v.name),
-      ts.chapter.map((v) => v.score * 10),
+      ts.chapter.map((v) => v.score),
     ];
   }, [ts]);
 
@@ -175,7 +175,7 @@ const UserDetail = () => {
               <div className="w-2/12 px-2 py-4">
                 {v.examDate ? format(new Date(v.examDate), 'yyyy/MM/dd') : '未知'}
               </div>
-              <div className="w-1/12 px-2 py-4">{v.score * 10}</div>
+              <div className="w-1/12 px-2 py-4">{v.score}</div>
               <div className="w-7/12 px-2 py-4">
                 <div className="mb-2 flex flex-wrap gap-2">
                   {v.question.categories.map((o) => (
@@ -198,7 +198,7 @@ const UserDetail = () => {
                 <div className="mb-4 flex items-center gap-2 text-sm leading-[1.5] text-grey-600">
                   <div>難易度:</div>
                   {v.difficulty !== null ? (
-                    <Rating value={5 - (4 / 5) * v.difficulty} readOnly size="small" />
+                    <Rating value={v.difficulty} readOnly size="small" precision={0.1} />
                   ) : (
                     <div>無資料</div>
                   )}
@@ -232,12 +232,12 @@ const UserDetail = () => {
               <div className="flex">
                 <div className="flex w-1/2 gap-2">
                   <div className="text-[14px] leading-[1.5] text-grey-500">分數(0~10)</div>
-                  <div className="text-[14px] leading-[1.5]">{v.score * 10}</div>
+                  <div className="text-[14px] leading-[1.5]">{v.score}</div>
                 </div>
                 <div className="flex w-1/2 gap-2">
                   <div className="text-[14px] leading-[1.5] text-grey-500">難易度</div>
                   {v.difficulty !== null ? (
-                    <Rating value={5 - (4 / 5) * v.difficulty} readOnly size="small" />
+                    <Rating value={v.difficulty} readOnly size="small" precision={0.1} />
                   ) : (
                     <div>無資料</div>
                   )}

@@ -213,7 +213,7 @@ const QuestionPage = () => {
               <div className="mb-4 flex items-center gap-2 text-sm leading-[1.5] text-grey-600">
                 <div>難易度:</div>
                 {v.difficulty !== null ? (
-                  <Rating value={5 - (4 / 5) * v.difficulty} readOnly size="small" />
+                  <Rating value={v.difficulty} readOnly size="small" precision={0.1} />
                 ) : (
                   <div>無資料</div>
                 )}
