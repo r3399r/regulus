@@ -9,3 +9,9 @@ export type QuestionForm = {
   defaultScore: string;
   defaultCount: string;
 };
+
+export type ResultForm = {
+  questionId: string;
+  userId: string;
+  score: string;
+}[];

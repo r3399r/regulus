@@ -161,6 +161,16 @@ export class QuestionService {
     return updatedQuestion;
   }
 
+  public calculateDifficulty = (
+    accumulativeScore: number,
+    accumulativeCount: string
+  ) => {
+    const tmpScore = bn(accumulativeScore).div(10).div(accumulativeCount);
+    const invScore = tmpScore.times(4);
+
+    return bn(5).minus(invScore).dp(2).toNumber();
+  };
+
   public async getQuestionList(
     params: GetQuestionParams | null
   ): Promise<Pagination<GetQuestionResponse>> {
@@ -180,11 +190,10 @@ export class QuestionService {
       }
       const difficulty =
         res && res.accumulativeCount !== null && res.accumulativeScore !== null
-          ? bn(res.accumulativeScore)
-              .div(res.accumulativeCount)
-              .times(5)
-              .dp(1)
-              .toNumber()
+          ? this.calculateDifficulty(
+              res.accumulativeScore,
+              res.accumulativeCount
+            )
           : null;
 
       return {
@@ -239,11 +248,7 @@ export class QuestionService {
         }
         const difficulty =
           q.accumulativeCount !== null && q.accumulativeScore !== null
-            ? bn(q.accumulativeScore)
-                .div(q.accumulativeCount)
-                .times(5)
-                .dp(1)
-                .toNumber()
+            ? this.calculateDifficulty(q.accumulativeScore, q.accumulativeCount)
             : null;
 
         return { ...q, imageUrl, difficulty };
