@@ -91,6 +91,7 @@ export type GetUserIdResponse = {
     chapter: { name: string; score: number }[];
   }[];
   results: (Result & {
+    imageUrl: string[] | null;
     difficulty: number | null;
   })[];
 };

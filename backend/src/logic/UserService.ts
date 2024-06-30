@@ -16,6 +16,7 @@ import { UserEntity } from 'src/model/entity/UserEntity';
 import { bn } from 'src/util/bignumber';
 import { compare } from 'src/util/compare';
 import { QuestionService } from './QuestionService';
+import { AwsUtil } from 'src/util/AwsUtil';
 
 /**
  * Service class for User
@@ -33,6 +34,9 @@ export class UserService {
 
   @inject(QuestionAccess)
   private readonly questionAccess!: QuestionAccess;
+  
+  @inject(AwsUtil)
+  private readonly awsUtil!: AwsUtil;
 
   public async addUser(data: PostUserRequest) {
     const user = new UserEntity();
@@ -139,20 +143,34 @@ export class UserService {
       });
     }
 
+    const res=await Promise.all(results.slice(0, 100).map(async(v) => {
+      let imageUrl: string[] | null = null;
+      if (v.question.hasImage) {
+        const s3Objects = await this.awsUtil.listS3Objects(
+          v.question.id.toLowerCase()
+        );
+        if (s3Objects.Contents && s3Objects.Contents.length > 0)
+          imageUrl = s3Objects.Contents.map((v) =>
+            v.Key ? this.awsUtil.getS3SignedUrl(v.Key) : ''
+          ).filter((v) => v !== '');
+      }
+      return({
+      ...v,
+      imageUrl,
+      difficulty:
+        v.question.accumulativeCount !== null &&
+        v.question.accumulativeScore !== null
+          ? this.questionService.calculateDifficulty(
+              v.question.accumulativeScore,
+              v.question.accumulativeCount
+            )
+          : null,
+    })}))
+
     return {
       user,
       timeseries,
-      results: results.slice(0, 100).map((v) => ({
-        ...v,
-        difficulty:
-          v.question.accumulativeCount !== null &&
-          v.question.accumulativeScore !== null
-            ? this.questionService.calculateDifficulty(
-                v.question.accumulativeScore,
-                v.question.accumulativeCount
-              )
-            : null,
-      })),
+      results: res,
     };
   }
 
