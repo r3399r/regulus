@@ -204,6 +204,13 @@ const UserDetail = () => {
                   )}
                 </div>
                 <div className="whitespace-pre-wrap">{v.question.content}</div>
+                <div className="flex flex-wrap">
+                  {v.imageUrl?.map((o, i) => (
+                    <div key={i}>
+                      <img src={o} />
+                    </div>
+                  ))}
+                </div>
                 <div className="mt-4">Ans: {v.question.answer}</div>
               </div>
             </div>
@@ -262,6 +269,13 @@ const UserDetail = () => {
                 ))}
               </div>
               <div className="whitespace-pre-wrap">{v.question.content}</div>
+              <div className="flex flex-wrap">
+                {v.imageUrl?.map((o, i) => (
+                  <div key={i}>
+                    <img src={o} />
+                  </div>
+                ))}
+              </div>
               <div>Ans: {v.question.answer}</div>
             </div>
           ))}

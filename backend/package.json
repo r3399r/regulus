@@ -1,6 +1,6 @@
 {
   "name": "regulus-service",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "Yue Chang",
   "scripts": {
     "lint:es": "eslint -c ./eslint.json src",
